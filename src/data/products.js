@@ -1,0 +1,351 @@
+export const products = [
+  // --- Headphones ---
+  {
+    id: 'hp-1',
+    name: 'AirPods Max',
+    brand: 'Apple',
+    price: 549,
+    description: 'Experience the perfect balance of exhilarating high-fidelity audio and the effortless magic of AirPods. The ultimate personal listening experience is here, designed with an over-ear fit for uncompromising acoustic isolation.',
+    images: [
+      'https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1628202926206-c63a34b1618f?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1608156639585-b3a032ef9689?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Headphones',
+    stock: 12,
+    isFeatured: true,
+    color: 'White',
+    availability: 'In Stock'
+  },
+  {
+    id: 'hp-2',
+    name: 'WH-1000XM5 Wireless Headphones',
+    brand: 'Sony',
+    price: 399,
+    description: 'Sony WH-1000XM5 headphones rewrite the rules for distraction-free listening. Two processors control eight microphones for unprecedented noise cancellation and exceptional call quality.',
+    images: [
+      'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Headphones',
+    stock: 25,
+    isFeatured: true,
+    color: 'Black',
+    availability: 'In Stock'
+  },
+  {
+    id: 'hp-3',
+    name: 'QuietComfort Ultra',
+    brand: 'Bose',
+    price: 429,
+    description: 'Bose QuietComfort Ultra Headphones feature world-class noise cancellation, breakthrough spatialized audio for more immersive listening, and an ultra-premium minimalist design.',
+    images: [
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Headphones',
+    stock: 8,
+    isFeatured: false,
+    color: 'Beige',
+    availability: 'In Stock'
+  },
+  {
+    id: 'hp-4',
+    name: 'ATH-M50xBT2 Professional Monitor',
+    brand: 'Audio-Technica',
+    price: 199,
+    description: 'The ATH-M50xBT2 delivers the same legendary studio sound profile as the original M50x wired monitors, now in a wireless package. Experience deep, accurate bass response with clear detail.',
+    images: [
+      'https://images.unsplash.com/photo-1599669454699-248893623440?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Headphones',
+    stock: 0,
+    isFeatured: false,
+    color: 'Dark Blue',
+    availability: 'Pre-order'
+  },
+
+  // --- Keyboard ---
+  {
+    id: 'kb-1',
+    name: 'Q6 Max Mechanical Keyboard',
+    brand: 'Keychron',
+    price: 219,
+    description: 'The Keychron Q6 Max is a full-sized premium metal custom mechanical keyboard. With a full aluminum CNC machined body, double-gasket design, and customizable layouts, it provides a supreme typing experience.',
+    images: [
+      'https://images.unsplash.com/photo-1601445638532-3c6f6c3aa1d6?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Keyboard',
+    stock: 15,
+    isFeatured: true,
+    color: 'Gray',
+    availability: 'In Stock'
+  },
+  {
+    id: 'kb-2',
+    name: 'MX Keys S Wireless Keyboard',
+    brand: 'Logitech',
+    price: 119,
+    description: 'Master your flow with MX Keys S - a low-profile wireless keyboard that offers a fluid, precise, and silent typing experience. Featuring smart illumination and customizable shortcuts.',
+    images: [
+      'https://images.unsplash.com/photo-1595225476474-87563907a212?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Keyboard',
+    stock: 30,
+    isFeatured: false,
+    color: 'Light Gray',
+    availability: 'In Stock'
+  },
+  {
+    id: 'kb-3',
+    name: 'BlackWidow V4 Pro',
+    brand: 'Razer',
+    price: 229,
+    description: 'From a dedicated command dial to an array of macro keys, experience full-blown battle station control with a mechanical gaming keyboard that matches your dedication to performance and RGB style.',
+    images: [
+      'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1595225476474-87563907a212?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1601445638532-3c6f6c3aa1d6?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Keyboard',
+    stock: 5,
+    isFeatured: false,
+    color: 'Black',
+    availability: 'In Stock'
+  },
+  {
+    id: 'kb-4',
+    name: 'Apex Pro Magnetic Switch Keyboard',
+    brand: 'SteelSeries',
+    price: 199,
+    description: 'The Apex Pro features OmniPoint 2.0 Adjustable HyperMagnetic Switches with 20x faster response time and 11x quicker actuation. Customize keys to the nearest 0.1mm for gaming supremacy.',
+    images: [
+      'https://images.unsplash.com/photo-1595225476474-87563907a212?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1601445638532-3c6f6c3aa1d6?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Keyboard',
+    stock: 10,
+    isFeatured: false,
+    color: 'Black',
+    availability: 'In Stock'
+  },
+
+  // --- Mouse ---
+  {
+    id: 'ms-1',
+    name: 'MX Master 3S Ergonomic Mouse',
+    brand: 'Logitech',
+    price: 99,
+    description: 'Logitech MX Master 3S is an iconic ergonomic mouse remastered for ultimate feel, precision, and performance. Features 8K DPI tracking on any surface and Quiet Clicks.',
+    images: [
+      'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1662540026194-e85d996962a9?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1625842268584-8f3290455655?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Mouse',
+    stock: 40,
+    isFeatured: true,
+    color: 'Light Gray',
+    availability: 'In Stock'
+  },
+  {
+    id: 'ms-2',
+    name: 'DeathAdder V3 Pro Wireless',
+    brand: 'Razer',
+    price: 149,
+    description: 'Victory takes on a new shape with the Razer DeathAdder V3 Pro. Refined and reformed with the aid of top esports pros, its iconic ergonomic form factor is now over 25% lighter.',
+    images: [
+      'https://images.unsplash.com/photo-1628144515213-40f808929008?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1625842268584-8f3290455655?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Mouse',
+    stock: 18,
+    isFeatured: false,
+    color: 'White',
+    availability: 'In Stock'
+  },
+  {
+    id: 'ms-3',
+    name: 'G Pro X Superlight 2',
+    brand: 'Logitech',
+    price: 159,
+    description: 'The next evolution of our championship-winning gaming mouse, now faster and more precise. Remastered with hybrid optical-mechanical switches and a 32K DPI sensor.',
+    images: [
+      'https://images.unsplash.com/photo-1662540026194-e85d996962a9?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1628144515213-40f808929008?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Mouse',
+    stock: 22,
+    isFeatured: false,
+    color: 'White',
+    availability: 'In Stock'
+  },
+  {
+    id: 'ms-4',
+    name: 'Model O 2 Wireless Mouse',
+    brand: 'Glorious',
+    price: 99,
+    description: 'An ultra-lightweight gaming mouse featuring state-of-the-art optical switches, a high-performance BAMF 2.0 sensor, and a signature honeycomb design for maximum comfort.',
+    images: [
+      'https://images.unsplash.com/photo-1625842268584-8f3290455655?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1628144515213-40f808929008?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Mouse',
+    stock: 0,
+    isFeatured: false,
+    color: 'Black',
+    availability: 'Pre-order'
+  },
+
+  // --- Camera ---
+  {
+    id: 'cm-1',
+    name: 'X-T5 Mirrorless Digital Camera',
+    brand: 'Fujifilm',
+    price: 1699,
+    description: 'A classic dial-based camera design packed with a high-resolution 40.2MP X-Trans CMOS 5 HR sensor, 5-axis in-body image stabilization, and iconic film simulation modes.',
+    images: [
+      'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Camera',
+    stock: 6,
+    isFeatured: true,
+    color: 'Black',
+    availability: 'In Stock'
+  },
+  {
+    id: 'cm-2',
+    name: 'Alpha 7 IV Mirrorless Camera',
+    brand: 'Sony',
+    price: 2499,
+    description: 'Setting a new benchmark for hybrid cameras, the Sony Alpha 7 IV features a 33MP Exmor R sensor, advanced autofocus with real-time tracking, and professional video capabilities.',
+    images: [
+      'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1564466809058-6411db9de757?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Camera',
+    stock: 12,
+    isFeatured: false,
+    color: 'Black',
+    availability: 'In Stock'
+  },
+  {
+    id: 'cm-3',
+    name: 'EOS R6 Mark II',
+    brand: 'Canon',
+    price: 2299,
+    description: 'Designed for active creators, the EOS R6 Mark II features high-speed continuous shooting up to 40fps, dual pixel CMOS AF II, and incredible low-light performance.',
+    images: [
+      'https://images.unsplash.com/photo-1564466809058-6411db9de757?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Camera',
+    stock: 4,
+    isFeatured: false,
+    color: 'Black',
+    availability: 'In Stock'
+  },
+  {
+    id: 'cm-4',
+    name: 'Lumix GH6 Hybrid Camera',
+    brand: 'Panasonic',
+    price: 1799,
+    description: 'The creative tool for filmmaking. Lumix GH6 provides 5.7K video recording, unlimited recording times, and outstanding image stabilization for run-and-gun cinematography.',
+    images: [
+      'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1564466809058-6411db9de757?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Camera',
+    stock: 0,
+    isFeatured: false,
+    color: 'Black',
+    availability: 'Pre-order'
+  },
+
+  // --- Accessories ---
+  {
+    id: 'ac-1',
+    name: 'MagSafe Wireless Charger',
+    brand: 'Apple',
+    price: 39,
+    description: 'The MagSafe Charger makes wireless charging a breeze. The perfectly aligned magnets attach to your iPhone and provide faster wireless charging up to 15W.',
+    images: [
+      'https://images.unsplash.com/photo-1619489646924-b4fce76b1db5?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Accessories',
+    stock: 50,
+    isFeatured: false,
+    color: 'White',
+    availability: 'In Stock'
+  },
+  {
+    id: 'ac-2',
+    name: '3-in-1 Charging Cube with MagSafe',
+    brand: 'Anker',
+    price: 149,
+    description: 'A premium, compact 3-in-1 charging solution for your iPhone, Apple Watch, and AirPods. The ultra-portable cube folds flat, making it the perfect travel accessory.',
+    images: [
+      'https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1619489646924-b4fce76b1db5?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1622445262465-2481c8575326?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Accessories',
+    stock: 35,
+    isFeatured: false,
+    color: 'Gray',
+    availability: 'In Stock'
+  },
+  {
+    id: 'ac-3',
+    name: 'Everyday Backpack (20L)',
+    brand: 'Peak Design',
+    price: 279,
+    description: 'An iconic, award-winning pack for everyday and photo gear carry. MagLatch hardware provides lightning-fast top access, with dual side-access zippers.',
+    images: [
+      'https://images.unsplash.com/photo-1622445262465-2481c8575326?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Accessories',
+    stock: 14,
+    isFeatured: false,
+    color: 'Dark Blue',
+    availability: 'In Stock'
+  },
+  {
+    id: 'ac-4',
+    name: 'Stream Deck MK.2 Studio Controller',
+    brand: 'Elgato',
+    price: 149,
+    description: 'Streamline your workflow with Elgato Stream Deck. 15 customizable LCD keys to trigger actions, launch apps, post to social media, or control audio settings.',
+    images: [
+      'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1622445262465-2481c8575326?w=800&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800&auto=format&fit=crop&q=80'
+    ],
+    category: 'Accessories',
+    stock: 20,
+    isFeatured: false,
+    color: 'Black',
+    availability: 'Pre-order'
+  }
+];
