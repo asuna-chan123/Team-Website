@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -30,6 +31,18 @@ function App() {
       </main>
       <Footer />
     </Router>
+=======
+import React from 'react';
+// 1. Nhập component LoginForm từ file SignIn.jsx bạn vừa tạo
+import LoginForm from './component/SignIn'; 
+
+function App() {
+  return (
+    <>
+      {/* 2. Gọi component để giao diện đăng nhập hiển thị lên màn hình */}
+      <LoginForm />
+    </>
+>>>>>>> dev
   );
 }
 
