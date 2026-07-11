@@ -83,7 +83,7 @@ const Navbar = (props) => {
                 </p>
               </div>
 
-              <button className="flex w-full items-center">
+              {/*<button className="flex w-full items-center">
                 <div className="flex h-full w-[85px] items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500 py-4 text-2xl text-white">
                   <BsArrowBarUp />
                 </div>
@@ -109,7 +109,7 @@ const Navbar = (props) => {
                     A new update for your downloaded item is available!
                   </p>
                 </div>
-              </button>
+              </button>*/}
             </div>
           }
           classNames={"py-2 top-4 -left-[230px] md:-left-[440px] w-max"}
@@ -157,7 +157,7 @@ const Navbar = (props) => {
           classNames={"py-2 top-6 -left-[250px] md:-left-[330px] w-max"}
           animation="origin-[75%_0%] md:origin-top-right transition-all duration-300 ease-in-out"
         />
-        <div
+        {/*<div
           className="cursor-pointer text-gray-600"
           onClick={() => {
             if (darkmode) {
@@ -174,9 +174,9 @@ const Navbar = (props) => {
           ) : (
             <RiMoonFill className="h-4 w-4 text-gray-600 dark:text-white" />
           )}
-        </div>
+        </div>*/}
         {/* Profile & Dropdown */}
-        <Dropdown
+        {/*<Dropdown
           button={
             <img
               className="h-10 w-10 rounded-full"
@@ -218,7 +218,7 @@ const Navbar = (props) => {
             </div>
           }
           classNames={"py-2 top-8 -left-[180px] w-max"}
-        />
+        />*/}
       </div>
     </nav>
   );

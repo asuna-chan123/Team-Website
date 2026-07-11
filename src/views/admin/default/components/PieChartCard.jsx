@@ -1,51 +1,93 @@
+import React from "react";
 import PieChart from "components/charts/PieChart";
-import { pieChartData, pieChartOptions } from "variables/charts";
 import Card from "components/card";
 
-const PieChartCard = () => {
+const PieChartCard = ({ products = [] }) => {
+  // Count products per category
+  const catCounts = {};
+  products.forEach(p => {
+    catCounts[p.category] = (catCounts[p.category] || 0) + 1;
+  });
+
+  const categories = Object.keys(catCounts);
+  const dataSeries = Object.values(catCounts);
+  const total = dataSeries.reduce((sum, val) => sum + val, 0);
+
+  const pieChartOptions = {
+    labels: categories,
+    colors: ["#4318FF", "#6AD2FF", "#EFF4FB", "#FFB547", "#10B981"],
+    chart: {
+      width: "100%",
+    },
+    states: {
+      hover: {
+        filter: {
+          type: "none",
+        },
+      },
+    },
+    legend: {
+      show: false,
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    hover: { mode: null },
+    plotOptions: {
+      donut: {
+        expandOnClick: false,
+        donut: {
+          labels: {
+            show: false,
+          },
+        },
+      },
+    },
+    fill: {
+      colors: ["#4318FF", "#6AD2FF", "#EFF4FB", "#FFB547", "#10B981"],
+    },
+    tooltip: {
+      enabled: true,
+      theme: "dark",
+    },
+  };
+
   return (
     <Card extra="rounded-[20px] p-3">
       <div className="flex flex-row justify-between px-3 pt-2">
         <div>
           <h4 className="text-lg font-bold text-navy-700 dark:text-white">
-            Your Pie Chart
+            Cơ cấu Sản phẩm
           </h4>
-        </div>
-
-        <div className="mb-6 flex items-center justify-center">
-          <select className="mb-3 mr-2 flex items-center justify-center text-sm font-bold text-gray-600 hover:cursor-pointer dark:!bg-navy-800 dark:text-white">
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-            <option value="weekly">Weekly</option>
-          </select>
+          <p className="text-xs text-gray-400">Theo danh mục</p>
         </div>
       </div>
 
       <div className="mb-auto flex h-[220px] w-full items-center justify-center">
-        <PieChart options={pieChartOptions} series={pieChartData} />
+        {total > 0 ? (
+          <PieChart options={pieChartOptions} series={dataSeries} />
+        ) : (
+          <p className="text-sm text-gray-400 italic">Chưa có dữ liệu</p>
+        )}
       </div>
-      <div className="flex flex-row !justify-between rounded-2xl px-6 py-3 shadow-2xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none">
-        <div className="flex flex-col items-center justify-center">
-          <div className="flex items-center justify-center">
-            <div className="h-2 w-2 rounded-full bg-brand-500" />
-            <p className="ml-1 text-sm font-normal text-gray-600">Your Files</p>
-          </div>
-          <p className="mt-px text-xl font-bold text-navy-700  dark:text-white">
-            63%
-          </p>
-        </div>
 
-        <div className="h-11 w-px bg-gray-300 dark:bg-white/10" />
+      <div className="grid grid-cols-2 gap-2 rounded-2xl px-4 py-3 shadow-2xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none max-h-[100px] overflow-y-auto">
+        {categories.slice(0, 4).map((cat, index) => {
+          const count = catCounts[cat];
+          const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+          const colors = ["bg-[#4318FF]", "bg-[#6AD2FF]", "bg-gray-200", "bg-[#FFB547]", "bg-[#10B981]"];
+          const colorClass = colors[index % colors.length];
 
-        <div className="flex flex-col items-center justify-center">
-          <div className="flex items-center justify-center">
-            <div className="h-2 w-2 rounded-full bg-[#6AD2FF]" />
-            <p className="ml-1 text-sm font-normal text-gray-600">System</p>
-          </div>
-          <p className="mt-px text-xl font-bold text-navy-700 dark:text-white">
-            25%
-          </p>
-        </div>
+          return (
+            <div key={index} className="flex flex-col items-center justify-center">
+              <div className="flex items-center justify-center">
+                <div className={`h-2 w-2 rounded-full ${colorClass}`} />
+                <p className="ml-1 text-xs text-gray-500 truncate max-w-[80px]">{cat}</p>
+              </div>
+              <p className="text-sm font-bold text-navy-700 dark:text-white">{pct}% ({count})</p>
+            </div>
+          );
+        })}
       </div>
     </Card>
   );

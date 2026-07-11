@@ -15,6 +15,8 @@ export function SidebarLinks(props) {
     return location.pathname.includes(routeName);
   };
 
+  const isLoggedIn = !!localStorage.getItem("adminToken");
+
   const createLinks = (routes) => {
     return routes.map((route, index) => {
       if (
@@ -22,8 +24,22 @@ export function SidebarLinks(props) {
         route.layout === "/auth" ||
         route.layout === "/rtl"
       ) {
+        const isSignInRoute = route.path === "sign-in";
+        const displayName = isSignInRoute && isLoggedIn ? "Đăng xuất" : route.name;
+
+        const handleClick = (e) => {
+          if (isSignInRoute && isLoggedIn) {
+            const confirmLogout = window.confirm("Bạn có chắc chắn muốn đăng xuất không?");
+            if (!confirmLogout) {
+              e.preventDefault();
+              return;
+            }
+            localStorage.removeItem("adminToken");
+          }
+        };
+
         return (
-          <Link key={index} to={route.layout + "/" + route.path}>
+          <Link key={index} to={isSignInRoute && isLoggedIn ? "/auth/sign-in" : (route.layout + "/" + route.path)} onClick={handleClick}>
             <div className="relative mb-3 flex hover:cursor-pointer">
               <li
                 className="my-[3px] flex cursor-pointer items-center px-8"
@@ -45,7 +61,7 @@ export function SidebarLinks(props) {
                       : "font-medium text-gray-600"
                   }`}
                 >
-                  {route.name}
+                  {displayName}
                 </p>
               </li>
               {activeRoute(route.path) ? (
