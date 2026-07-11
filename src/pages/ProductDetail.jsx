@@ -58,14 +58,46 @@ const getCategorySpecs = (product) => {
 
 export default function ProductDetail() {
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
+  
+  const foundProduct = products.find(p => p.id === id);
+  const initialRelated = products
+    .filter(p => p.category === (foundProduct ? foundProduct.category : '') && p.id !== id)
+    .slice(0, 4);
+
+  const [product, setProduct] = useState(foundProduct || null);
+  const [relatedProductsList, setRelatedProductsList] = useState(initialRelated);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   // Fetch product based on ID param
   useEffect(() => {
-    const foundProduct = products.find(p => p.id === id);
-    setProduct(foundProduct || null);
+    const initialProduct = products.find(p => p.id === id);
+    setProduct(initialProduct || null);
+    if (initialProduct) {
+      setRelatedProductsList(
+        products.filter(p => p.category === initialProduct.category && p.id !== id).slice(0, 4)
+      );
+    }
     setActiveImageIndex(0); // Reset to first image on product change
+
+    // Fetch from backend
+    fetch(`http://localhost:5000/api/products/${id}`)
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success && resData.data) {
+          setProduct(resData.data);
+          
+          // Once the product is loaded, fetch related products of same category
+          fetch(`http://localhost:5000/api/products?category=${encodeURIComponent(resData.data.category)}`)
+            .then(r => r.json())
+            .then(relData => {
+              if (relData.success) {
+                setRelatedProductsList(relData.data.filter(p => p.id !== id).slice(0, 4));
+              }
+            })
+            .catch(err => console.error('Error fetching related products:', err));
+        }
+      })
+      .catch(err => console.error('Error fetching product detail:', err));
     
     // Scroll to top of the page on render
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -83,14 +115,24 @@ export default function ProductDetail() {
     );
   }
 
-  const { name, price, description, images, category, stock, brand } = product;
+  const { name, price, description, images = [], image, category, stock, brand } = product;
   const isAvailable = stock > 0;
-  const specs = getCategorySpecs(product);
+  
+  // Ưu tiên hiển thị thông số kỹ thuật (specifications) thực tế từ database
+  const specs = (Array.isArray(product.specifications) && product.specifications.length > 0)
+    ? product.specifications
+    : getCategorySpecs(product);
+
+  const fallbackImage = '/images/products/no-image.jpg';
+  const rawImages = Array.isArray(images) && images.length > 0
+    ? images
+    : [image || fallbackImage];
+
+  // Làm sạch và mã hóa URL đường dẫn ảnh an toàn
+  const cleanedImages = rawImages.map(img => img.startsWith('http') ? img : encodeURI(img));
 
   // Find related products (same category, excluding current product, max 4 items)
-  const relatedProducts = products
-    .filter(p => p.category === category && p.id !== id)
-    .slice(0, 4);
+  const relatedProducts = relatedProductsList;
 
   return (
     <div className="container product-detail-page">
@@ -111,14 +153,19 @@ export default function ProductDetail() {
         <div className="gallery-container">
           <div className="main-image-wrapper">
             <img 
-              src={images[activeImageIndex]} 
+              src={cleanedImages[activeImageIndex] || fallbackImage} 
               alt={`${name} view ${activeImageIndex + 1}`} 
+              onError={(event) => {
+                if (event.currentTarget.src !== window.location.origin + fallbackImage && event.currentTarget.src !== fallbackImage) {
+                  event.currentTarget.src = fallbackImage;
+                }
+              }}
             />
           </div>
           
-          {images.length > 1 && (
+          {cleanedImages.length > 1 && (
             <div className="thumbnail-row">
-              {images.map((imgUrl, index) => (
+              {cleanedImages.map((imgUrl, index) => (
                 <button
                   key={index}
                   className={`thumbnail-btn ${index === activeImageIndex ? 'active' : ''}`}
@@ -126,7 +173,15 @@ export default function ProductDetail() {
                   onMouseEnter={() => setActiveImageIndex(index)}
                   aria-label={`View image ${index + 1}`}
                 >
-                  <img src={imgUrl} alt={`${name} thumbnail ${index + 1}`} />
+                  <img 
+                    src={imgUrl} 
+                    alt={`${name} thumbnail ${index + 1}`} 
+                    onError={(event) => {
+                      if (event.currentTarget.src !== window.location.origin + fallbackImage && event.currentTarget.src !== fallbackImage) {
+                        event.currentTarget.src = fallbackImage;
+                      }
+                    }}
+                  />
                 </button>
               ))}
             </div>
@@ -137,7 +192,7 @@ export default function ProductDetail() {
         <div className="info-panel">
           {brand && <span className="info-brand">{brand}</span>}
           <h1 className="info-name">{name}</h1>
-          <div className="info-price">${price.toLocaleString()}</div>
+          <div className="info-price">{Number(price || 0).toLocaleString('vi-VN')} ₫</div>
           
           <p className="info-description">{description}</p>
           

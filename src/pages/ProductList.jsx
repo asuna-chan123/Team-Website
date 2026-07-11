@@ -7,6 +7,18 @@ import CategorySidebar from '../components/CategorySidebar';
 
 export default function ProductList() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [productsList, setProductsList] = useState(products);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/products')
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success) {
+          setProductsList(resData.data);
+        }
+      })
+      .catch(err => console.error('Error fetching products:', err));
+  }, []);
   
   // State variables for filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,10 +30,16 @@ export default function ProductList() {
   
   // Dynamic Max Price calculation
   const maxPrice = useMemo(() => {
-    return Math.max(...products.map(p => p.price));
-  }, []);
+    if (productsList.length === 0) return 3000;
+    return Math.max(...productsList.map(p => p.price));
+  }, [productsList]);
   
   const [priceLimit, setPriceLimit] = useState(maxPrice);
+  
+  // Đồng bộ priceLimit khi maxPrice được tính toán lại sau khi lấy dữ liệu từ backend
+  useEffect(() => {
+    setPriceLimit(maxPrice);
+  }, [maxPrice]);
   
   // Mobile sidebar state
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -43,7 +61,7 @@ export default function ProductList() {
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    let result = [...products];
+    let result = [...productsList];
 
     // Search query filter
     if (searchQuery.trim() !== '') {
@@ -88,7 +106,7 @@ export default function ProductList() {
     }
 
     return result;
-  }, [searchQuery, selectedCategories, selectedBrands, selectedColors, selectedAvailabilities, priceLimit, sortOption]);
+  }, [productsList, searchQuery, selectedCategories, selectedBrands, selectedColors, selectedAvailabilities, priceLimit, sortOption]);
 
   // Handle filter resets
   const handleResetFilters = () => {
@@ -133,7 +151,7 @@ export default function ProductList() {
           {/* Controls Bar */}
           <div className="list-controls-row">
             <span className="list-count">
-              Showing {filteredProducts.length} of {products.length} products
+              Showing {filteredProducts.length} of {productsList.length} products
             </span>
 
             <div style={{ display: 'flex', gap: '12px' }}>

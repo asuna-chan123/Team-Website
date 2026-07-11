@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { categories } from '../data/categories';
 import { products } from '../data/products';
 
@@ -7,7 +8,31 @@ const COLOR_MAP = {
   'Gray': '#8e8e93',
   'Beige': '#e8d8c8',
   'Dark Blue': '#1f2d3d',
-  'Light Gray': '#d2d2d7'
+  'Light Gray': '#d2d2d7',
+  'Titan Tự Nhiên': '#beaf9f',
+  'Titan Đen': '#232426',
+  'Titan Xanh': '#2f4452',
+  'Titan Trắng': '#eaeae8',
+  'Bạc': '#c0c0c0',
+  'Xám': '#808080',
+  'Đen': '#000000',
+  'Trắng': '#ffffff'
+};
+
+const getColorHex = (colorName) => {
+  if (COLOR_MAP[colorName]) return COLOR_MAP[colorName];
+  const nameLower = colorName.toLowerCase();
+  if (nameLower.includes('đen') || nameLower.includes('black') || nameLower.includes('obsidian')) return '#1a1a1a';
+  if (nameLower.includes('trắng') || nameLower.includes('white') || nameLower.includes('porcelain')) return '#fcfcfc';
+  if (nameLower.includes('xám') || nameLower.includes('gray') || nameLower.includes('grey') || nameLower.includes('titan tự nhiên')) return '#beaf9f';
+  if (nameLower.includes('bạc') || nameLower.includes('silver')) return '#e0e0e0';
+  if (nameLower.includes('vàng') || nameLower.includes('gold') || nameLower.includes('yellow')) return '#ffd700';
+  if (nameLower.includes('tím') || nameLower.includes('purple')) return '#800080';
+  if (nameLower.includes('xanh') || nameLower.includes('blue') || nameLower.includes('green')) return '#3b5998';
+  if (nameLower.includes('hồng') || nameLower.includes('pink')) return '#ffc0cb';
+  if (nameLower.includes('ánh sao') || nameLower.includes('starlight')) return '#eae2d5';
+  if (nameLower.includes('đỏ') || nameLower.includes('red')) return '#e60000';
+  return '#8e8e93';
 };
 
 const AVAILABILITY_OPTIONS = ['In Stock', 'Pre-order'];
@@ -28,8 +53,34 @@ export default function CategorySidebar({
   isOpen,
   onClose
 }) {
-  // Extract unique brands dynamically from products list
-  const allBrands = [...new Set(products.map(p => p.brand))].sort();
+  const [categoriesList, setCategoriesList] = useState(categories);
+  const [productsList, setProductsList] = useState(products);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/categories')
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success) {
+          setCategoriesList(resData.data);
+        }
+      })
+      .catch(err => console.error('Error fetching categories in sidebar:', err));
+
+    fetch('http://localhost:5000/api/products')
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success) {
+          setProductsList(resData.data);
+        }
+      })
+      .catch(err => console.error('Error fetching products in sidebar:', err));
+  }, []);
+
+  // Trích xuất các nhãn hiệu duy nhất từ danh sách sản phẩm thực tế
+  const allBrands = [...new Set(productsList.map(p => p.brand))].filter(Boolean).sort();
+
+  // Trích xuất các màu sắc duy nhất từ danh sách sản phẩm thực tế
+  const allColors = [...new Set(productsList.flatMap(p => p.colors || (p.color ? [p.color] : [])))].filter(Boolean).sort();
 
   const handleCategoryToggle = (category) => {
     if (selectedCategories.includes(category)) {
@@ -97,7 +148,7 @@ export default function CategorySidebar({
         <div className="filter-group">
           <h3 className="filter-group-title">Categories</h3>
           <div className="filter-list">
-            {categories.map((category) => (
+            {categoriesList.map((category) => (
               <label key={category} className="filter-checkbox-label">
                 <input
                   type="checkbox"
@@ -114,10 +165,10 @@ export default function CategorySidebar({
         <div className="filter-group">
           <h3 className="filter-group-title">Colors</h3>
           <div className="color-swatch-list">
-            {Object.keys(COLOR_MAP).map((colorName) => {
-              const hexValue = COLOR_MAP[colorName];
+            {allColors.map((colorName) => {
+              const hexValue = getColorHex(colorName);
               const isSelected = selectedColors.includes(colorName);
-              const isWhite = colorName === 'White';
+              const isWhite = colorName === 'White' || colorName === 'Trắng';
               
               return (
                 <button
@@ -149,14 +200,14 @@ export default function CategorySidebar({
               className="price-slider"
               min="0"
               max={maxPrice}
-              step="10"
+              step="10000"
               value={priceLimit}
               onChange={(e) => onPriceLimitChange(Number(e.target.value))}
             />
             <div className="price-values-row">
-              <span>$0</span>
-              <span><strong>${priceLimit.toLocaleString()}</strong></span>
-              <span>${maxPrice.toLocaleString()}</span>
+              <span>0 ₫</span>
+              <span><strong>{priceLimit.toLocaleString('vi-VN')} ₫</strong></span>
+              <span>{maxPrice.toLocaleString('vi-VN')} ₫</span>
             </div>
           </div>
         </div>

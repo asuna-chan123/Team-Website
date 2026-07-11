@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -7,6 +6,7 @@ import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import Contact from './pages/Contact';
 import About from './pages/About';
+import LoginForm from './component/SignIn';
 
 function App() {
   return (
@@ -19,6 +19,7 @@ function App() {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<LoginForm />} />
           {/* Fallback route */}
           <Route path="*" element={
             <div className="container empty-state" style={{ padding: '120px 0' }}>
@@ -31,18 +32,6 @@ function App() {
       </main>
       <Footer />
     </Router>
-=======
-import React from 'react';
-// 1. Nhập component LoginForm từ file SignIn.jsx bạn vừa tạo
-import LoginForm from './component/SignIn'; 
-
-function App() {
-  return (
-    <>
-      {/* 2. Gọi component để giao diện đăng nhập hiển thị lên màn hình */}
-      <LoginForm />
-    </>
->>>>>>> dev
   );
 }
 

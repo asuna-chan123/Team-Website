@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { products } from '../data/products';
 import { categories } from '../data/categories';
@@ -37,12 +38,34 @@ const CategoryIcons = {
 
 export default function Home() {
   const navigate = useNavigate();
+  const [productsList, setProductsList] = useState(products);
+  const [categoriesList, setCategoriesList] = useState(categories);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/products')
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success) {
+          setProductsList(resData.data);
+        }
+      })
+      .catch(err => console.error('Error fetching products:', err));
+
+    fetch('http://localhost:5000/api/categories')
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success) {
+          setCategoriesList(resData.data);
+        }
+      })
+      .catch(err => console.error('Error fetching categories:', err));
+  }, []);
 
   // Get featured products (isFeatured === true, cap to 4 items)
-  const featuredProducts = products.filter(p => p.isFeatured).slice(0, 4);
+  const featuredProducts = productsList.filter(p => p.isFeatured).slice(0, 4);
 
   // Get explore products (exclude featured products, take next 4 items)
-  const exploreProducts = products.filter(p => !p.isFeatured).slice(0, 4);
+  const exploreProducts = productsList.filter(p => !p.isFeatured).slice(0, 4);
 
   const handleCategoryClick = (categoryName) => {
     navigate(`/products?category=${categoryName}`);
@@ -82,7 +105,7 @@ export default function Home() {
           </div>
           
           <div className="categories-grid">
-            {categories.map((category) => (
+            {categoriesList.map((category) => (
               <div 
                 key={category} 
                 className="category-card"
