@@ -7,6 +7,11 @@ import Profile from "views/admin/profile";
 import DataTables from "views/admin/tables";
 import RTLDefault from "views/rtl/default";
 
+// New Dynamic Views
+import Products from "views/admin/products";
+import Orders from "views/admin/orders";
+import Customers from "views/admin/customers";
+
 // Auth Imports
 import SignIn from "views/auth/SignIn";
 
@@ -17,6 +22,9 @@ import {
   MdBarChart,
   MdPerson,
   MdLock,
+  MdShoppingBag,
+  MdReceipt,
+  MdPeople,
 } from "react-icons/md";
 
 const routes = [
@@ -28,40 +36,33 @@ const routes = [
     component: <MainDashboard />,
   },
   {
-    name: "NFT Marketplace",
+    name: "Sản phẩm",
     layout: "/admin",
-    path: "nft-marketplace",
-    icon: <MdOutlineShoppingCart className="h-6 w-6" />,
-    component: <NFTMarketplace />,
-    secondary: true,
+    path: "products",
+    icon: <MdShoppingBag className="h-6 w-6" />,
+    component: <Products />,
   },
   {
-    name: "Data Tables",
+    name: "Đơn hàng",
     layout: "/admin",
-    icon: <MdBarChart className="h-6 w-6" />,
-    path: "data-tables",
-    component: <DataTables />,
+    path: "orders",
+    icon: <MdReceipt className="h-6 w-6" />,
+    component: <Orders />,
   },
   {
-    name: "Profile",
+    name: "Khách hàng",
     layout: "/admin",
-    path: "profile",
-    icon: <MdPerson className="h-6 w-6" />,
-    component: <Profile />,
+    path: "customers",
+    icon: <MdPeople className="h-6 w-6" />,
+    component: <Customers />,
   },
+
   {
     name: "Sign In",
     layout: "/auth",
     path: "sign-in",
     icon: <MdLock className="h-6 w-6" />,
     component: <SignIn />,
-  },
-  {
-    name: "RTL Admin",
-    layout: "/rtl",
-    path: "rtl",
-    icon: <MdHome className="h-6 w-6" />,
-    component: <RTLDefault />,
-  },
+  }
 ];
 export default routes;
