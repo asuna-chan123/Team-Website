@@ -29,7 +29,7 @@ const Cart = ({ items, updateQuantity, removeItem, onProceed }) => {
                         <PlusIcon />
                       </button>
                     </div>
-                    <div className="item-price">${(item.price * item.quantity).toFixed(2)}</div>
+                    <div className="item-price">{(item.price * item.quantity).toLocaleString('vi-VN')}đ</div>
                   </div>
                 </div>
                 <button className="remove-btn" onClick={() => removeItem(item.id)}>
@@ -44,7 +44,7 @@ const Cart = ({ items, updateQuantity, removeItem, onProceed }) => {
           <h2 className="summary-title">Order Summary</h2>
           <div className="summary-row">
             <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>{subtotal.toLocaleString('vi-VN')}đ</span>
           </div>
           <div className="summary-row">
             <span>Shipping</span>
@@ -52,11 +52,11 @@ const Cart = ({ items, updateQuantity, removeItem, onProceed }) => {
           </div>
           <div className="summary-row">
             <span>Tax</span>
-            <span>$0.00</span>
+            <span>0đ</span>
           </div>
           <div className="summary-row total">
             <span>Total</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>{subtotal.toLocaleString('vi-VN')}đ</span>
           </div>
           <button className="btn-primary" onClick={onProceed}>
             Proceed to Checkout

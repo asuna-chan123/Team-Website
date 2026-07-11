@@ -152,7 +152,7 @@ const Checkout = ({ items, onBack }) => {
                   <div className="mini-name">{item.name}</div>
                   <div className="mini-variant">{item.variant}</div>
                 </div>
-                <div className="mini-price">${(item.price * item.quantity).toFixed(2)}</div>
+                <div className="mini-price">{(item.price * item.quantity).toLocaleString('vi-VN')}đ</div>
               </div>
             ))}
           </div>
@@ -164,7 +164,7 @@ const Checkout = ({ items, onBack }) => {
 
           <div className="summary-row">
             <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>{subtotal.toLocaleString('vi-VN')}đ</span>
           </div>
           <div className="summary-row">
             <span>Shipping</span>
@@ -172,12 +172,12 @@ const Checkout = ({ items, onBack }) => {
           </div>
           <div className="summary-row">
             <span>Estimated taxes</span>
-            <span>${taxes.toFixed(2)}</span>
+            <span>{taxes.toLocaleString('vi-VN')}đ</span>
           </div>
           <div className="summary-row total">
             <span>Total</span>
-            <span style={{fontSize: '14px', fontWeight: 400, color: 'var(--text-muted)'}}>USD</span>
-            <span style={{marginLeft: 'auto'}}>${total.toFixed(2)}</span>
+            <span style={{fontSize: '14px', fontWeight: 400, color: 'var(--text-muted)'}}>VND</span>
+            <span style={{marginLeft: 'auto'}}>{total.toLocaleString('vi-VN')}đ</span>
           </div>
         </div>
       </div>
