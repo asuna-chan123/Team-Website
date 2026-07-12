@@ -7,7 +7,8 @@ import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import Contact from './pages/Contact';
 import About from './pages/About';
-import LoginForm from './component/SIgnIn';
+import LoginForm from './User/SIgnIn';
+import Profile from './User/Profile';
 import Cart from './components/Cart';
 import Checkout from './components/Checkout';
 
@@ -57,6 +58,7 @@ function AppContent() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/cart" element={
             <Cart
               items={cartItems}
