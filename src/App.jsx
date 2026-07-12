@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -6,11 +7,47 @@ import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import Contact from './pages/Contact';
 import About from './pages/About';
-import LoginForm from './component/SignIn';
+import LoginForm from './component/SIgnIn';
+import Cart from './components/Cart';
+import Checkout from './components/Checkout';
 
-function App() {
+const initialItems = [
+  {
+    id: '6a51f50b0a59cffcab9d0aa5',
+    name: 'iPhone 17 Pro Max',
+    variant: 'Màu cam vũ trụ',
+    price: 35990000,
+    quantity: 1,
+    image: 'https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/42/342679/iphone-17-pro-max-cam-1-639174800885056316-750x500.jpg'
+  },
+  {
+    id: '6a51e1fc53a135e68160cefd',
+    name: 'Tai nghe Bluetooth Không Dây Hifi',
+    variant: 'Màu Đen',
+    price: 590000,
+    quantity: 1,
+    image: 'https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/54/367818/tai-nghe-bluetooth-chup-tai-sony-wh-1000xx-den-1-639165371248861166-750x500.jpg'
+  }
+];
+
+function AppContent() {
+  const [cartItems, setCartItems] = useState(initialItems);
+  const navigate = useNavigate();
+
+  const updateQuantity = (id, newQuantity) => {
+    setCartItems(items =>
+      items.map(item =>
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
+  const removeItem = (id) => {
+    setCartItems(items => items.filter(item => item.id !== id));
+  };
+
   return (
-    <Router>
+    <>
       <Header />
       <main style={{ flexGrow: 1 }}>
         <Routes>
@@ -20,6 +57,20 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/cart" element={
+            <Cart
+              items={cartItems}
+              updateQuantity={updateQuantity}
+              removeItem={removeItem}
+              onProceed={() => navigate('/checkout')}
+            />
+          } />
+          <Route path="/checkout" element={
+            <Checkout
+              items={cartItems}
+              onBack={() => navigate('/cart')}
+            />
+          } />
           {/* Fallback route */}
           <Route path="*" element={
             <div className="container empty-state" style={{ padding: '120px 0' }}>
@@ -31,6 +82,14 @@ function App() {
         </Routes>
       </main>
       <Footer />
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

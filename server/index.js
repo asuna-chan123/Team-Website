@@ -15,9 +15,11 @@ app.use(express.json());
 // Routes
 const categoryRoutes = require('./routes/category.routes');
 const productRoutes = require('./routes/product.routes');
+const cartRoutes = require('./routes/cartRoutes');
 
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
 
 app.get('/api/health', async (req, res) => {
   try {
