@@ -1,13 +1,14 @@
-import React from 'react';
-// 1. Nhập component LoginForm từ file SignIn.jsx bạn vừa tạo
-import LoginForm from './component/SignIn'; 
+import React, { useState } from 'react';
+import LoginForm from './User/SIgnIn';
+import Profile from './User/Profile';
 
 function App() {
-  return (
-    <>
-      {/* 2. Gọi component để giao diện đăng nhập hiển thị lên màn hình */}
-      <LoginForm />
-    </>
+  const [user, setUser] = useState(null);
+
+  return user ? (
+    <Profile userInfo={user} onSignOut={() => setUser(null)} />
+  ) : (
+    <LoginForm onSignInSuccess={setUser} />
   );
 }
 
