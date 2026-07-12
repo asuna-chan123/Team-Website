@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './Checkout.css';
 import { LockIcon } from './icons';
 
-const Checkout = ({ items, onBack, currentUser }) => {
+const Checkout = ({ items, onBack, currentUser, onOrderSuccess }) => {
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const taxes = subtotal * 0.05; // 5% tax estimate
   const total = subtotal + taxes;
@@ -19,21 +19,55 @@ const Checkout = ({ items, onBack, currentUser }) => {
   const [apartment, setApartment] = useState('');
   const [country, setCountry] = useState('Vietnam');
 
+  const handleOrder = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: currentUser?.id,
+          items: items.map(item => ({
+            productId: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image
+          })),
+          totalAmount: total,
+          address: `${firstName} ${lastName}, ${address}, ${apartment || ''}, ${country}`
+        })
+      });
+
+      if (!response.ok) {
+        alert('Failed to place order.');
+        return;
+      }
+
+      const orderData = await response.json();
+      if (onOrderSuccess) {
+        onOrderSuccess(orderData);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Error placing order.');
+    }
+  };
+
   return (
     <div className="container">
       <div className="checkout-page">
         <div className="checkout-main">
-          
+
           <div className="checkout-section">
             <h2 className="section-title">
               Contact Information
             </h2>
             <div className="input-group">
               <label className="input-label">Email Address</label>
-              <input 
-                type="email" 
-                className="input-field" 
-                placeholder="Enter your email" 
+              <input
+                type="email"
+                className="input-field"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -49,7 +83,7 @@ const Checkout = ({ items, onBack, currentUser }) => {
             <h2 className="section-title">Shipping Address</h2>
             <div className="input-group">
               <label className="input-label">Country/Region</label>
-              <select 
+              <select
                 className="input-field"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
@@ -62,18 +96,18 @@ const Checkout = ({ items, onBack, currentUser }) => {
             <div className="flex-row">
               <div className="input-group flex-1">
                 <label className="input-label">First Name</label>
-                <input 
-                  type="text" 
-                  className="input-field" 
+                <input
+                  type="text"
+                  className="input-field"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                 />
               </div>
               <div className="input-group flex-1">
                 <label className="input-label">Last Name</label>
-                <input 
-                  type="text" 
-                  className="input-field" 
+                <input
+                  type="text"
+                  className="input-field"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                 />
@@ -81,41 +115,41 @@ const Checkout = ({ items, onBack, currentUser }) => {
             </div>
             <div className="input-group">
               <label className="input-label">Address</label>
-              <input 
-                type="text" 
-                className="input-field" 
-                placeholder="Street address or P.O. Box" 
+              <input
+                type="text"
+                className="input-field"
+                placeholder="Street address or P.O. Box"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
               />
             </div>
             <div className="input-group">
               <label className="input-label">Apartment, suite, etc. (optional)</label>
-              <input 
-                type="text" 
-                className="input-field" 
+              <input
+                type="text"
+                className="input-field"
                 value={apartment}
                 onChange={(e) => setApartment(e.target.value)}
               />
             </div>
             <div className="input-group">
               <label className="input-label">Phone</label>
-              <input 
-                type="tel" 
-                className="input-field" 
+              <input
+                type="tel"
+                className="input-field"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
             </div>
           </div>
 
-          <button className="btn-primary" style={{marginTop: '24px'}}>
+          <button className="btn-primary" onClick={handleOrder} style={{ marginTop: '24px' }}>
             ORDER NOW
           </button>
           <div className="secure-checkout">
             <LockIcon /> Encrypted secure checkout
           </div>
-          
+
           <span className="back-link" onClick={onBack}>
             Return to Cart
           </span>
@@ -123,7 +157,7 @@ const Checkout = ({ items, onBack, currentUser }) => {
 
         <div className="checkout-sidebar">
           <h2 className="summary-title">Order Summary</h2>
-          
+
           <div className="mini-cart-items">
             {items.map(item => (
               <div key={item.id} className="mini-cart-item">
@@ -140,11 +174,6 @@ const Checkout = ({ items, onBack, currentUser }) => {
             ))}
           </div>
 
-          <div className="discount-code">
-            <input type="text" className="input-field flex-1" placeholder="Discount code" />
-            <button className="btn-secondary">APPLY</button>
-          </div>
-
           <div className="summary-row">
             <span>Subtotal</span>
             <span>{subtotal.toLocaleString('vi-VN')}đ</span>
@@ -159,8 +188,8 @@ const Checkout = ({ items, onBack, currentUser }) => {
           </div>
           <div className="summary-row total">
             <span>Total</span>
-            <span style={{fontSize: '14px', fontWeight: 400, color: 'var(--text-muted)'}}>VND</span>
-            <span style={{marginLeft: 'auto'}}>{total.toLocaleString('vi-VN')}đ</span>
+            <span style={{ fontSize: '14px', fontWeight: 400, color: 'var(--text-muted)' }}>VND</span>
+            <span style={{ marginLeft: 'auto' }}>{total.toLocaleString('vi-VN')}đ</span>
           </div>
         </div>
       </div>

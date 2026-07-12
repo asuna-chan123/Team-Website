@@ -55,6 +55,36 @@ function AppContent() {
     setCartItems(items => items.filter(item => item.id !== id));
   };
 
+  const handleOrderSuccess = async (orderData) => {
+    // Empty the cart
+    setCartItems([]);
+    
+    // Refresh user profile details to get updated purchaseHistory
+    if (currentUser?.id) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/profile/${currentUser.id}`);
+        if (response.ok) {
+          const updatedUser = await response.json();
+          const normalized = {
+            id: updatedUser._id || updatedUser.id,
+            fullName: updatedUser.username || updatedUser.fullName,
+            email: updatedUser.email,
+            phone: updatedUser.phone,
+            address: updatedUser.address,
+            avatar: updatedUser.avatar,
+            purchaseHistory: updatedUser.purchaseHistory || []
+          };
+          setCurrentUser(normalized);
+          localStorage.setItem('currentUser', JSON.stringify(normalized));
+        }
+      } catch (error) {
+        console.error('Error refreshing user details:', error);
+      }
+    }
+    
+    navigate('/profile');
+  };
+
   return (
     <>
       <Header />
@@ -76,7 +106,16 @@ function AppContent() {
               }} 
             />
           } />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={
+            <Profile 
+              userInfo={currentUser} 
+              onSignOut={() => {
+                setCurrentUser(null);
+                localStorage.removeItem('currentUser');
+                navigate('/login');
+              }}
+            />
+          } />
           <Route path="/cart" element={
             <Cart
               items={cartItems}
@@ -97,6 +136,7 @@ function AppContent() {
               items={cartItems}
               onBack={() => navigate('/cart')}
               currentUser={currentUser}
+              onOrderSuccess={handleOrderSuccess}
             />
           } />
           {/* Fallback route */}
