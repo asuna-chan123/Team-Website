@@ -4,6 +4,7 @@ const cors = require('cors');
 const connectDB = require('./db');
 const mongoose = require('mongoose');
 const { connectRedis, client: redisClient } = require('./redisClient');
+const seedData = require('./utils/seeder');
 
 const app = express();
 
@@ -12,14 +13,20 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+const categoryRoutes = require('./routes/category.routes');
+const productRoutes = require('./routes/product.routes');
+
+app.use('/api/categories', categoryRoutes);
+app.use('/api/products', productRoutes);
+
 app.get('/api/health', async (req, res) => {
   try {
     // Test Redis connection
     await redisClient.set('health_check', 'ok', { EX: 10 });
     const redisVal = await redisClient.get('health_check');
-    
-    res.json({ 
-      status: 'ok', 
+
+    res.json({
+      status: 'ok',
       mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
       redis: redisVal === 'ok' ? 'connected' : 'disconnected'
     });
@@ -34,6 +41,9 @@ const startServer = async () => {
   // Connect Databases
   await connectDB();
   await connectRedis();
+
+  // Run Seeder
+  //await seedData();
 
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
