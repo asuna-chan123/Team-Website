@@ -33,6 +33,14 @@ const initialItems = [
 
 function AppContent() {
   const [cartItems, setCartItems] = useState(initialItems);
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem('currentUser');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
+  });
   const navigate = useNavigate();
 
   const updateQuantity = (id, newQuantity) => {
@@ -57,20 +65,38 @@ function AppContent() {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<LoginForm />} />
+          <Route path="/login" element={
+            <LoginForm 
+              onSignInSuccess={(user) => {
+                setCurrentUser(user);
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                const redirectPath = localStorage.getItem('redirectAfterLogin') || '/';
+                localStorage.removeItem('redirectAfterLogin');
+                navigate(redirectPath);
+              }} 
+            />
+          } />
           <Route path="/profile" element={<Profile />} />
           <Route path="/cart" element={
             <Cart
               items={cartItems}
               updateQuantity={updateQuantity}
               removeItem={removeItem}
-              onProceed={() => navigate('/checkout')}
+              onProceed={() => {
+                if (!currentUser) {
+                  localStorage.setItem('redirectAfterLogin', '/checkout');
+                  navigate('/login');
+                } else {
+                  navigate('/checkout');
+                }
+              }}
             />
           } />
           <Route path="/checkout" element={
             <Checkout
               items={cartItems}
               onBack={() => navigate('/cart')}
+              currentUser={currentUser}
             />
           } />
           {/* Fallback route */}

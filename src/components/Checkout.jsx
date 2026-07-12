@@ -2,11 +2,26 @@ import React, { useState } from 'react';
 import './Checkout.css';
 import { LockIcon } from './icons';
 
-const Checkout = ({ items, onBack }) => {
+const Checkout = ({ items, onBack, currentUser }) => {
   const [paymentMethod, setPaymentMethod] = useState('credit');
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const taxes = subtotal * 0.05; // 5% tax estimate
   const total = subtotal + taxes;
+
+  const names = (currentUser?.fullName || '').split(' ');
+  const initialFirstName = names[0] || '';
+  const initialLastName = names.slice(1).join(' ') || '';
+
+  const [email, setEmail] = useState(currentUser?.email || '');
+  const [firstName, setFirstName] = useState(initialFirstName);
+  const [lastName, setLastName] = useState(initialLastName);
+  const [address, setAddress] = useState(currentUser?.address || '');
+  const [phone, setPhone] = useState(currentUser?.phone || '');
+  const [apartment, setApartment] = useState('');
+  const [city, setCity] = useState('');
+  const [stateCode, setStateCode] = useState('CA');
+  const [zipCode, setZipCode] = useState('');
+  const [country, setCountry] = useState('Vietnam');
 
   return (
     <div className="container">
@@ -16,11 +31,16 @@ const Checkout = ({ items, onBack }) => {
           <div className="checkout-section">
             <h2 className="section-title">
               Contact Information
-              <a href="#">Log in</a>
             </h2>
             <div className="input-group">
               <label className="input-label">Email Address</label>
-              <input type="email" className="input-field" placeholder="Enter your email" />
+              <input 
+                type="email" 
+                className="input-field" 
+                placeholder="Enter your email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <label className="checkbox-group">
               <input type="checkbox" /> Email me with news and offers
@@ -33,7 +53,11 @@ const Checkout = ({ items, onBack }) => {
             <h2 className="section-title">Shipping Address</h2>
             <div className="input-group">
               <label className="input-label">Country/Region</label>
-              <select className="input-field">
+              <select 
+                className="input-field"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+              >
                 <option>United States</option>
                 <option>Canada</option>
                 <option>Vietnam</option>
@@ -42,29 +66,59 @@ const Checkout = ({ items, onBack }) => {
             <div className="flex-row">
               <div className="input-group flex-1">
                 <label className="input-label">First Name</label>
-                <input type="text" className="input-field" />
+                <input 
+                  type="text" 
+                  className="input-field" 
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
               </div>
               <div className="input-group flex-1">
                 <label className="input-label">Last Name</label>
-                <input type="text" className="input-field" />
+                <input 
+                  type="text" 
+                  className="input-field" 
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
               </div>
             </div>
             <div className="input-group">
               <label className="input-label">Address</label>
-              <input type="text" className="input-field" placeholder="Street address or P.O. Box" />
+              <input 
+                type="text" 
+                className="input-field" 
+                placeholder="Street address or P.O. Box" 
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
             </div>
             <div className="input-group">
               <label className="input-label">Apartment, suite, etc. (optional)</label>
-              <input type="text" className="input-field" />
+              <input 
+                type="text" 
+                className="input-field" 
+                value={apartment}
+                onChange={(e) => setApartment(e.target.value)}
+              />
             </div>
             <div className="flex-row">
               <div className="input-group flex-1">
                 <label className="input-label">City</label>
-                <input type="text" className="input-field" />
+                <input 
+                  type="text" 
+                  className="input-field" 
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                />
               </div>
               <div className="input-group flex-1">
                 <label className="input-label">State</label>
-                <select className="input-field">
+                <select 
+                  className="input-field"
+                  value={stateCode}
+                  onChange={(e) => setStateCode(e.target.value)}
+                >
                   <option>CA</option>
                   <option>NY</option>
                   <option>TX</option>
@@ -72,12 +126,22 @@ const Checkout = ({ items, onBack }) => {
               </div>
               <div className="input-group flex-1">
                 <label className="input-label">Zip Code</label>
-                <input type="text" className="input-field" />
+                <input 
+                  type="text" 
+                  className="input-field" 
+                  value={zipCode}
+                  onChange={(e) => setZipCode(e.target.value)}
+                />
               </div>
             </div>
             <div className="input-group">
               <label className="input-label">Phone</label>
-              <input type="tel" className="input-field" />
+              <input 
+                type="tel" 
+                className="input-field" 
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
             </div>
           </div>
 
