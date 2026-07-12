@@ -3,7 +3,6 @@ import './Checkout.css';
 import { LockIcon } from './icons';
 
 const Checkout = ({ items, onBack, currentUser }) => {
-  const [paymentMethod, setPaymentMethod] = useState('credit');
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const taxes = subtotal * 0.05; // 5% tax estimate
   const total = subtotal + taxes;
@@ -18,9 +17,6 @@ const Checkout = ({ items, onBack, currentUser }) => {
   const [address, setAddress] = useState(currentUser?.address || '');
   const [phone, setPhone] = useState(currentUser?.phone || '');
   const [apartment, setApartment] = useState('');
-  const [city, setCity] = useState('');
-  const [stateCode, setStateCode] = useState('CA');
-  const [zipCode, setZipCode] = useState('');
   const [country, setCountry] = useState('Vietnam');
 
   return (
@@ -102,38 +98,6 @@ const Checkout = ({ items, onBack, currentUser }) => {
                 onChange={(e) => setApartment(e.target.value)}
               />
             </div>
-            <div className="flex-row">
-              <div className="input-group flex-1">
-                <label className="input-label">City</label>
-                <input 
-                  type="text" 
-                  className="input-field" 
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                />
-              </div>
-              <div className="input-group flex-1">
-                <label className="input-label">State</label>
-                <select 
-                  className="input-field"
-                  value={stateCode}
-                  onChange={(e) => setStateCode(e.target.value)}
-                >
-                  <option>CA</option>
-                  <option>NY</option>
-                  <option>TX</option>
-                </select>
-              </div>
-              <div className="input-group flex-1">
-                <label className="input-label">Zip Code</label>
-                <input 
-                  type="text" 
-                  className="input-field" 
-                  value={zipCode}
-                  onChange={(e) => setZipCode(e.target.value)}
-                />
-              </div>
-            </div>
             <div className="input-group">
               <label className="input-label">Phone</label>
               <input 
@@ -145,53 +109,8 @@ const Checkout = ({ items, onBack, currentUser }) => {
             </div>
           </div>
 
-          <hr />
-
-          <div className="checkout-section">
-            <h2 className="section-title">Payment</h2>
-            <p className="checkbox-group" style={{marginBottom: '16px'}}>All transactions are secure and encrypted.</p>
-            
-            <div className="payment-methods">
-              <div 
-                className={`payment-method ${paymentMethod === 'credit' ? 'active' : ''}`}
-                onClick={() => setPaymentMethod('credit')}
-              >
-                <input type="radio" checked={paymentMethod === 'credit'} readOnly />
-                <span>Credit Card</span>
-                <span style={{marginLeft: 'auto'}}><LockIcon /></span>
-              </div>
-              
-              {paymentMethod === 'credit' && (
-                <div className="payment-details">
-                  <div className="input-group">
-                    <input type="text" className="input-field" placeholder="Card number" />
-                  </div>
-                  <div className="flex-row">
-                    <div className="input-group flex-1">
-                      <input type="text" className="input-field" placeholder="Expiration date (MM / YY)" />
-                    </div>
-                    <div className="input-group flex-1">
-                      <input type="text" className="input-field" placeholder="Security code" />
-                    </div>
-                  </div>
-                  <div className="input-group" style={{marginBottom: 0}}>
-                    <input type="text" className="input-field" placeholder="Name on card" />
-                  </div>
-                </div>
-              )}
-
-              <div 
-                className={`payment-method ${paymentMethod === 'paypal' ? 'active' : ''}`}
-                onClick={() => setPaymentMethod('paypal')}
-              >
-                <input type="radio" checked={paymentMethod === 'paypal'} readOnly />
-                <span>PayPal</span>
-              </div>
-            </div>
-          </div>
-
           <button className="btn-primary" style={{marginTop: '24px'}}>
-            PAY NOW
+            ORDER NOW
           </button>
           <div className="secure-checkout">
             <LockIcon /> Encrypted secure checkout
