@@ -1277,51 +1277,7 @@ button {
   .about-categories-grid {
     grid-template-columns: 1fr;
   }
-=======
-  background-color: var(--bg-main);
-  color: var(--text-main);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
 }
-
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
-}
-
-input {
-  font-family: inherit;
-}
-
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 40px 20px;
-}
-
-/* Base button styles */
-.btn-primary {
-  background-color: var(--black);
-  color: var(--white);
-  padding: 16px 24px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 500;
-  width: 100%;
-  transition: opacity 0.2s;
-}
-
-.btn-primary:hover {
-  opacity: 0.8;
-}
-
 /* Input styles */
 .input-group {
   margin-bottom: 16px;
@@ -1369,5 +1325,4 @@ hr {
   border: none;
   border-top: 1px solid var(--border-color);
   margin: 24px 0;
->>>>>>> feature/card
 }
