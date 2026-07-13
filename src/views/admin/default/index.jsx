@@ -140,7 +140,7 @@ export default function Dashboard() {
                   <tr key={o._id} className="hover:bg-gray-50 dark:hover:bg-navy-700/50 transition">
                     <td className="py-3 font-bold text-brand-500">{o.orderNumber}</td>
                     <td className="py-3">
-                      <p className="font-semibold">{o.shippingInfo.recipientName}</p>
+                      <p className="font-semibold">{o.shippingInfo?.recipientName}</p>
                       <p className="text-xs text-gray-400">{o.customerEmail}</p>
                     </td>
                     <td className="py-3 font-semibold">{o.totalAmount.toLocaleString('vi-VN')}đ</td>

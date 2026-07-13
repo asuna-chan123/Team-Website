@@ -70,9 +70,9 @@ export default function Orders() {
 
   const handleOpenEdit = (order) => {
     setSelectedOrder(order);
-    setRecipientName(order.shippingInfo.recipientName);
-    setPhone(order.shippingInfo.phone);
-    setAddress(order.shippingInfo.address);
+    setRecipientName(order.shippingInfo?.recipientName || "");
+    setPhone(order.shippingInfo?.phone || "");
+    setAddress(order.shippingInfo?.address || "");
     setStatus(order.status);
     setTrackingNumber(order.trackingNumber || "");
     setCarrier(order.carrier || "");
@@ -231,9 +231,9 @@ export default function Orders() {
   };
 
   const filteredOrders = orders.filter((o) => {
-    const matchesSearch = o.orderNumber.toLowerCase().includes(searchOrder.toLowerCase()) || 
-                          o.shippingInfo.recipientName.toLowerCase().includes(searchOrder.toLowerCase()) ||
-                          o.customerEmail.toLowerCase().includes(searchOrder.toLowerCase());
+    const matchesSearch = (o.orderNumber || "").toLowerCase().includes(searchOrder.toLowerCase()) || 
+                          (o.shippingInfo?.recipientName || "").toLowerCase().includes(searchOrder.toLowerCase()) ||
+                          (o.customerEmail || "").toLowerCase().includes(searchOrder.toLowerCase());
     const matchesStatus = statusFilter === "" || o.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -305,9 +305,9 @@ export default function Orders() {
                     <p className="text-xs text-gray-400">Đặt lúc: {new Date(o.createdAt).toLocaleDateString('vi-VN')}</p>
                   </td>
                   <td className="py-4 px-4">
-                    <p className="font-bold">{o.shippingInfo.recipientName}</p>
-                    <p className="text-xs text-gray-400">SĐT: {o.shippingInfo.phone}</p>
-                    <p className="text-xs text-gray-400 truncate max-w-[200px]" title={o.shippingInfo.address}>Đ/C: {o.shippingInfo.address}</p>
+                    <p className="font-bold">{o.shippingInfo?.recipientName}</p>
+                    <p className="text-xs text-gray-400">SĐT: {o.shippingInfo?.phone}</p>
+                    <p className="text-xs text-gray-400 truncate max-w-[200px]" title={o.shippingInfo?.address}>Đ/C: {o.shippingInfo?.address}</p>
                   </td>
                   <td className="py-4 px-4 font-bold text-navy-700 dark:text-white">
                     {o.totalAmount.toLocaleString('vi-VN')}đ
@@ -636,8 +636,8 @@ export default function Orders() {
               </div>
               <div className="col-span-2">
                 <p className="text-gray-400">Địa chỉ nhận hàng:</p>
-                <p className="font-semibold">{selectedOrder.shippingInfo.recipientName} - {selectedOrder.shippingInfo.phone}</p>
-                <p className="font-semibold">{selectedOrder.shippingInfo.address}</p>
+                <p className="font-semibold">{selectedOrder.shippingInfo?.recipientName} - {selectedOrder.shippingInfo?.phone}</p>
+                <p className="font-semibold">{selectedOrder.shippingInfo?.address}</p>
               </div>
             </div>
 
