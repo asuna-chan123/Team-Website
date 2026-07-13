@@ -84,7 +84,7 @@ export default function Header() {
           </Link>
           
           {/* Cart Icon */}
-          <button className="header-icon-btn" aria-label="Cart">
+          <button className="header-icon-btn" onClick={() => navigate('/cart')} aria-label="Cart">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="header-icon">
               <circle cx="9" cy="21" r="1"></circle>
               <circle cx="20" cy="21" r="1"></circle>

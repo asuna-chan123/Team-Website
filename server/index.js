@@ -17,11 +17,13 @@ const categoryRoutes = require('./routes/category.routes');
 const productRoutes = require('./routes/product.routes');
 const cartRoutes = require('./routes/cartRoutes');
 const userRoutes = require('./routes/userRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api', userRoutes);
+app.use('/api/orders', orderRoutes);
 
 app.get('/api/health', async (req, res) => {
   try {

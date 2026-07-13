@@ -33,6 +33,14 @@ const initialItems = [
 
 function AppContent() {
   const [cartItems, setCartItems] = useState(initialItems);
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem('currentUser');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
+  });
   const navigate = useNavigate();
 
   const updateQuantity = (id, newQuantity) => {
@@ -47,6 +55,36 @@ function AppContent() {
     setCartItems(items => items.filter(item => item.id !== id));
   };
 
+  const handleOrderSuccess = async (orderData) => {
+    // Empty the cart
+    setCartItems([]);
+    
+    // Refresh user profile details to get updated purchaseHistory
+    if (currentUser?.id) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/profile/${currentUser.id}`);
+        if (response.ok) {
+          const updatedUser = await response.json();
+          const normalized = {
+            id: updatedUser._id || updatedUser.id,
+            fullName: updatedUser.username || updatedUser.fullName,
+            email: updatedUser.email,
+            phone: updatedUser.phone,
+            address: updatedUser.address,
+            avatar: updatedUser.avatar,
+            purchaseHistory: updatedUser.purchaseHistory || []
+          };
+          setCurrentUser(normalized);
+          localStorage.setItem('currentUser', JSON.stringify(normalized));
+        }
+      } catch (error) {
+        console.error('Error refreshing user details:', error);
+      }
+    }
+    
+    navigate('/profile');
+  };
+
   return (
     <>
       <Header />
@@ -57,20 +95,48 @@ function AppContent() {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/login" element={
+            <LoginForm 
+              onSignInSuccess={(user) => {
+                setCurrentUser(user);
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                const redirectPath = localStorage.getItem('redirectAfterLogin') || '/';
+                localStorage.removeItem('redirectAfterLogin');
+                navigate(redirectPath);
+              }} 
+            />
+          } />
+          <Route path="/profile" element={
+            <Profile 
+              userInfo={currentUser} 
+              onSignOut={() => {
+                setCurrentUser(null);
+                localStorage.removeItem('currentUser');
+                navigate('/login');
+              }}
+            />
+          } />
           <Route path="/cart" element={
             <Cart
               items={cartItems}
               updateQuantity={updateQuantity}
               removeItem={removeItem}
-              onProceed={() => navigate('/checkout')}
+              onProceed={() => {
+                if (!currentUser) {
+                  localStorage.setItem('redirectAfterLogin', '/checkout');
+                  navigate('/login');
+                } else {
+                  navigate('/checkout');
+                }
+              }}
             />
           } />
           <Route path="/checkout" element={
             <Checkout
               items={cartItems}
               onBack={() => navigate('/cart')}
+              currentUser={currentUser}
+              onOrderSuccess={handleOrderSuccess}
             />
           } />
           {/* Fallback route */}
