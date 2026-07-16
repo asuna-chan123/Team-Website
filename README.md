@@ -1,71 +1,71 @@
 # Team Website Project
 
-Chào mừng các bạn đến với dự án Team Website!
+Welcome to the Team Website project!
 
-Dưới đây là hướng dẫn chi tiết về quy trình làm việc nhóm với Git và GitHub để đảm bảo code không bị xung đột và dự án luôn ổn định.
+This guide explains the team workflow with Git and GitHub so the code stays conflict-free and stable.
 
-## 🌳 Cấu trúc nhánh (Branching Model)
+## 🌳 Branching Model
 
-Dự án của chúng ta sẽ tuân theo cấu trúc nhánh sau:
+The project follows this branching model:
 
-1. **Nhánh `main` (hoặc `master`)**:
-   - Đây là nhánh chứa code **khởi tạo sạch nhất** và **hoàn thiện nhất**.
-   - Code trên nhánh này luôn trong trạng thái **sẵn sàng để chạy (deploy)**.
-   - ⚠️ **Quy tắc Tối thượng**: Tuyệt đối **KHÔNG AI** được code trực tiếp hay push thẳng (trực tiếp) lên nhánh `main`.
+1. **`main` (or `master`) branch**:
+   - This branch contains the cleanest and most complete code.
+   - Code here should always be ready to run or deploy.
+   - ⚠️ **Rule**: Do not push code directly to `main`.
 
-2. **Nhánh `dev` (hoặc `develop`)**:
-   - Nhánh này được tạo ra từ `main`.
-   - Đây là **nhánh trung gian**, nơi hội tụ code của tất cả các thành viên.
-   - Khi mỗi người làm xong một tính năng, code sẽ được gộp (merge) vào nhánh `dev` này để test chung xem các tính năng có hoạt động tốt cùng nhau hay có xung đột (conflict) gì không.
+2. **`dev` (or `develop`) branch**:
+   - This branch is created from `main`.
+   - It is the integration branch where everyone merges their work.
+   - When a feature is ready, merge it into `dev` to test together and resolve conflicts.
 
-3. **Nhánh cá nhân / tính năng (Feature Branches)**:
-   - Từ nhánh `dev`, mỗi người sẽ tự tạo một nhánh riêng để làm phần việc của mình.
-   - 📌 **Quy tắc đặt tên**: Sử dụng tiền tố `feature/<tên-tính-năng>` hoặc `tên-người/<tên-tính-năng>`.
-     - *Ví dụ*: `feature/login-page`, `an/header-component`, `binh/footer`.
+3. **Feature branches**:
+   - Create a separate branch from `dev` for each task.
+   - 📌 **Naming rule**: use `feature/<feature-name>` or `<name>/<feature-name>`.
+     - Example: `feature/login-page`, `an/header-component`, `binh/footer`.
 
 ---
 
-## 🚀 Quy trình làm việc hàng ngày (Workflow)
+## 🚀 Daily Workflow
 
-Vui lòng làm theo các bước sau mỗi khi bạn bắt đầu một tính năng mới:
+Follow these steps whenever you start a new feature:
 
-### Bước 1: Lấy code mới nhất về máy
-Luôn luôn đảm bảo bạn đang ở nhánh `dev` và có code mới nhất trước khi tạo nhánh mới.
+### Step 1: Get the latest code
+Make sure you are on `dev` and have the latest changes before creating a branch.
 ```bash
 git checkout dev
 git pull origin dev
 ```
 
-### Bước 2: Tạo nhánh làm việc riêng
-Tạo nhánh feature mới từ nhánh `dev` để bắt đầu code:
+### Step 2: Create your working branch
+Create a new feature branch from `dev`:
 ```bash
-git checkout -b feature/ten-tinh-nang-cua-ban
+git checkout -b feature/your-feature-name
 ```
 
-### Bước 3: Code và Commit
-Thực hiện các thay đổi trong code của bạn. Sau khi hoàn thành một phần việc, hãy commit lại:
+### Step 3: Code and commit
+Make your changes and commit them when a piece is done:
 ```bash
 git add .
-git commit -m "Mô tả ngắn gọn về những gì bạn vừa làm"
+git commit -m "Short description of what you changed"
 ```
 
-### Bước 4: Đẩy nhánh cá nhân lên GitHub
-Sau khi code xong, hãy đẩy nhánh của bạn lên GitHub:
+### Step 4: Push your branch to GitHub
+Push your branch after finishing your work:
 ```bash
-git push origin feature/ten-tinh-nang-cua-ban
+git push origin feature/your-feature-name
 ```
 
-### Bước 5: Tạo Pull Request (PR)
-1. Lên trang GitHub của dự án: https://github.com/asuna-chan123/Team-Website
-2. Bạn sẽ thấy thông báo về nhánh vừa đẩy lên, bấm vào nút **Compare & pull request**.
-3. **Quan trọng**: Chọn nhánh đích (base branch) là `dev` (không phải `main`).
-4. Điền tiêu đề và mô tả cho PR của bạn.
-5. Bấm **Create pull request**.
+### Step 5: Create a Pull Request (PR)
+1. Go to the project on GitHub: https://github.com/asuna-chan123/Team-Website
+2. Click **Compare & pull request** on your pushed branch.
+3. **Important**: set the base branch to `dev`, not `main`.
+4. Add a title and description for your PR.
+5. Click **Create pull request**.
 
-### Bước 6: Review và Gộp Code (Merge)
-- Cả nhóm (hoặc trưởng nhóm) sẽ vào xem PR, đọc code và thảo luận nếu cần thiết.
-- Nếu mọi thứ ổn định và không có lỗi (conflict), trưởng nhóm hoặc người được phân công sẽ bấm **Merge pull request** để gộp tính năng của bạn vào nhánh `dev`.
+### Step 6: Review and merge
+- Team members or the project lead will review the PR.
+- If everything is stable and there are no conflicts, merge the branch into `dev`.
 
 ---
 
-Chúc cả nhóm làm việc hiệu quả và thành công! 🚀
+Good luck and happy coding! 🚀

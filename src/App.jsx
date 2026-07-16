@@ -1,3 +1,16 @@
+<<<<<<< HEAD
+import React, { useState } from 'react';
+import LoginForm from './User/SIgnIn';
+import Profile from './User/Profile';
+
+function App() {
+  const [user, setUser] = useState(null);
+
+  return user ? (
+    <Profile userInfo={user} onSignOut={() => setUser(null)} />
+  ) : (
+    <LoginForm onSignInSuccess={setUser} />
+=======
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -32,6 +45,7 @@ function App() {
       </main>
       <Footer />
     </Router>
+>>>>>>> feature/product-module
   );
 }
 
