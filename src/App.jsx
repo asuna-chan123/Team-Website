@@ -6,7 +6,7 @@ import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import Contact from './pages/Contact';
 import About from './pages/About';
-import LoginForm from './component/SignIn';
+import LoginForm from './components/SignIn';
 
 function App() {
   return (

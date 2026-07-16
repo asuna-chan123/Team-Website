@@ -1,31 +1,17 @@
 import { useNavigate } from 'react-router-dom';
+import { getProductImage } from '../utils/imageHelper';
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
 
-  const {
-    id,
-    name,
-    price,
-    images = [],
-    image,
-    brand,
-    stock = 0,
-    category
-  } = product;
+  const { id, name, brand, category } = product;
+  const firstVariant = product.variants && product.variants.length > 0 ? product.variants[0] : null;
+  const price = firstVariant ? firstVariant.price : 0;
+  const stock = firstVariant ? firstVariant.stock : 0;
 
   const isAvailable = stock > 0;
   const fallbackImage = '/images/products/no-image.jpg';
-
-  const rawImage =
-    Array.isArray(images) && images.length > 0
-      ? images[0]
-      : image || fallbackImage;
-
-  // Sử dụng encodeURI cho đường dẫn cục bộ có khoảng trắng
-  const productImage = rawImage.startsWith('http')
-    ? rawImage
-    : encodeURI(rawImage);
+  const productImage = getProductImage(product);
 
   const handleCardClick = () => {
     navigate(`/product/${id}`);
@@ -39,8 +25,8 @@ export default function ProductCard({ product }) {
           alt={name}
           loading="lazy"
           onError={(event) => {
-            // Tránh vòng lặp onError vô hạn nếu ảnh fallback cũng không tải được
-            if (event.currentTarget.src !== window.location.origin + fallbackImage && event.currentTarget.src !== fallbackImage) {
+            if (!event.currentTarget.dataset.fallbackApplied) {
+              event.currentTarget.dataset.fallbackApplied = 'true';
               event.currentTarget.src = fallbackImage;
             }
           }}

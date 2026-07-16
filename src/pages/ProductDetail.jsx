@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { products } from '../data/products';
 import ProductCard from '../components/ProductCard';
+import { getProductImage, normalizeImagePath } from '../utils/imageHelper';
 
 // Helper to generate premium specifications based on product category
 const getCategorySpecs = (product) => {
@@ -59,54 +59,66 @@ const getCategorySpecs = (product) => {
 export default function ProductDetail() {
   const { id } = useParams();
   
-  const foundProduct = products.find(p => p.id === id);
-  const initialRelated = products
-    .filter(p => p.category === (foundProduct ? foundProduct.category : '') && p.id !== id)
-    .slice(0, 4);
-
-  const [product, setProduct] = useState(foundProduct || null);
-  const [relatedProductsList, setRelatedProductsList] = useState(initialRelated);
+  const [product, setProduct] = useState(null);
+  const [relatedProductsList, setRelatedProductsList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   // Fetch product based on ID param
   useEffect(() => {
-    const initialProduct = products.find(p => p.id === id);
-    setProduct(initialProduct || null);
-    if (initialProduct) {
-      setRelatedProductsList(
-        products.filter(p => p.category === initialProduct.category && p.id !== id).slice(0, 4)
-      );
-    }
+    setLoading(true);
+    setError("");
     setActiveImageIndex(0); // Reset to first image on product change
 
     // Fetch from backend
-    fetch(`http://localhost:5000/api/products/${id}`)
+    fetch(`http://localhost:5000/api/products/${encodeURIComponent(id)}`)
       .then(res => res.json())
       .then(resData => {
-        if (resData.success && resData.data) {
-          setProduct(resData.data);
+        const loadedProduct = resData.data || resData;
+        if (loadedProduct && (loadedProduct.name || loadedProduct._id)) {
+          setProduct(loadedProduct);
           
           // Once the product is loaded, fetch related products of same category
-          fetch(`http://localhost:5000/api/products?category=${encodeURIComponent(resData.data.category)}`)
+          const categoryToFetch = loadedProduct.category || "";
+          fetch(`http://localhost:5000/api/products?category=${encodeURIComponent(categoryToFetch)}`)
             .then(r => r.json())
             .then(relData => {
-              if (relData.success) {
-                setRelatedProductsList(relData.data.filter(p => p.id !== id).slice(0, 4));
-              }
+              const relList = Array.isArray(relData)
+                ? relData
+                : Array.isArray(relData.data)
+                  ? relData.data
+                  : [];
+              setRelatedProductsList(relList.filter(p => p.id !== id && p._id !== loadedProduct._id).slice(0, 4));
             })
             .catch(err => console.error('Error fetching related products:', err));
+        } else {
+          setError("Product not found");
         }
+        setLoading(false);
       })
-      .catch(err => console.error('Error fetching product detail:', err));
+      .catch(err => {
+        console.error('Error fetching product detail:', err);
+        setError("Error loading product details");
+        setLoading(false);
+      });
     
     // Scroll to top of the page on render
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [id]);
 
-  if (!product) {
+  if (loading) {
+    return (
+      <div className="container" style={{ padding: '120px 0', textAlign: 'center' }}>
+        <h3 style={{ fontSize: '20px', fontWeight: 500 }}>Loading Product details...</h3>
+      </div>
+    );
+  }
+
+  if (error || !product) {
     return (
       <div className="container empty-state" style={{ padding: '120px 0' }}>
-        <h2>Product Not Found</h2>
+        <h2>{error || "Product Not Found"}</h2>
         <p>The product you are looking for does not exist or has been removed.</p>
         <Link to="/products" className="btn btn-dark">
           Back to Shop
@@ -115,7 +127,10 @@ export default function ProductDetail() {
     );
   }
 
-  const { name, price, description, images = [], image, category, stock, brand } = product;
+  const { name, description, category, brand } = product;
+  const firstVariant = product.variants && product.variants.length > 0 ? product.variants[0] : null;
+  const price = firstVariant ? firstVariant.price : 0;
+  const stock = firstVariant ? firstVariant.stock : 0;
   const isAvailable = stock > 0;
   
   // Ưu tiên hiển thị thông số kỹ thuật (specifications) thực tế từ database
@@ -124,12 +139,9 @@ export default function ProductDetail() {
     : getCategorySpecs(product);
 
   const fallbackImage = '/images/products/no-image.jpg';
-  const rawImages = Array.isArray(images) && images.length > 0
-    ? images
-    : [image || fallbackImage];
-
-  // Làm sạch và mã hóa URL đường dẫn ảnh an toàn
-  const cleanedImages = rawImages.map(img => img.startsWith('http') ? img : encodeURI(img));
+  const cleanedImages = Array.isArray(product.images) && product.images.length > 0
+    ? product.images.map(normalizeImagePath)
+    : [getProductImage(product)];
 
   // Find related products (same category, excluding current product, max 4 items)
   const relatedProducts = relatedProductsList;
@@ -156,7 +168,8 @@ export default function ProductDetail() {
               src={cleanedImages[activeImageIndex] || fallbackImage} 
               alt={`${name} view ${activeImageIndex + 1}`} 
               onError={(event) => {
-                if (event.currentTarget.src !== window.location.origin + fallbackImage && event.currentTarget.src !== fallbackImage) {
+                if (!event.currentTarget.dataset.fallbackApplied) {
+                  event.currentTarget.dataset.fallbackApplied = 'true';
                   event.currentTarget.src = fallbackImage;
                 }
               }}
@@ -177,7 +190,8 @@ export default function ProductDetail() {
                     src={imgUrl} 
                     alt={`${name} thumbnail ${index + 1}`} 
                     onError={(event) => {
-                      if (event.currentTarget.src !== window.location.origin + fallbackImage && event.currentTarget.src !== fallbackImage) {
+                      if (!event.currentTarget.dataset.fallbackApplied) {
+                        event.currentTarget.dataset.fallbackApplied = 'true';
                         event.currentTarget.src = fallbackImage;
                       }
                     }}

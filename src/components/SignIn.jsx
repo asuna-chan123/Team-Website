@@ -15,7 +15,7 @@ export default function LoginForm() {
     <div className="flex justify-center items-center min-h-screen bg-[#1e1e24] p-4">
       {/* Khung giao diện chính mô phỏng thiết kế */}
       <div className="w-full max-w-[420px] bg-white rounded-3xl p-8 flex flex-col items-center font-sans shadow-xl">
-        
+
         {/* Avatar Icon */}
         <div className="mb-10 mt-4">
           <svg width="70" height="70" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -26,7 +26,7 @@ export default function LoginForm() {
 
         {/* Form Đăng Nhập */}
         <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">
-          
+
           {/* Input Email/SĐT */}
           <div className="w-full">
             <input
@@ -100,21 +100,21 @@ export default function LoginForm() {
           {/* Nút Google */}
           <button className="w-16 h-14 border border-gray-400 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-colors">
             <svg className="w-7 h-7" viewBox="0 0 24 24">
-              <path fill="#000000" d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C18.155 2.114 15.433 1 12.24 1 6.033 1 1 6.033 1 12.24s5.033 11.24 11.24 11.24c6.478 0 10.793-4.537 10.793-10.986 0-.746-.08-1.32-.176-1.886H12.24Z"/>
+              <path fill="#000000" d="M12.24 10.285V13.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l2.427-2.334C18.155 2.114 15.433 1 12.24 1 6.033 1 1 6.033 1 12.24s5.033 11.24 11.24 11.24c6.478 0 10.793-4.537 10.793-10.986 0-.746-.08-1.32-.176-1.886H12.24Z" />
             </svg>
           </button>
 
           {/* Nút Facebook */}
           <button className="w-16 h-14 border border-gray-400 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-colors">
             <svg className="w-7 h-7" viewBox="0 0 24 24">
-              <path fill="#000000" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12Z"/>
+              <path fill="#000000" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12Z" />
             </svg>
           </button>
 
           {/* Nút X (Twitter cũ) */}
           <button className="w-16 h-14 border border-gray-400 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition-colors">
             <svg className="w-6 h-6" viewBox="0 0 24 24">
-              <path fill="#000000" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              <path fill="#000000" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
             </svg>
           </button>
         </div>
