@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 
 // Định nghĩa schema cho Product (Sản phẩm)
 const productSchema = new mongoose.Schema({
+  sku: {
+    type: String,
+    trim: true
+  },
   name: {
     type: String,
     required: true,
@@ -9,46 +13,26 @@ const productSchema = new mongoose.Schema({
   },
   slug: {
     type: String,
-    required: true,
-    unique: true,
     trim: true,
     lowercase: true
   },
   description: {
+    type: String
+  },
+  category: {
     type: String,
-    required: true
-  },
-  price: {
-    type: Number,
-    required: true
-  },
-  image: {
-    type: String,
-    required: true
-  },
-  images: {
-    type: [String],
-    default: []
-  },
-  categoryId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    required: true
-  },
-  categoryName: {
-    type: String,
-    required: true,
     trim: true
   },
+  variants: [{
+    color: String,
+    size: String,
+    price: Number,
+    stock: Number,
+    image: String
+  }],
   brand: {
     type: String,
-    required: true,
     trim: true
-  },
-  stock: {
-    type: Number,
-    required: true,
-    default: 0
   },
   rating: {
     type: Number,
@@ -58,16 +42,13 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  colors: {
-    type: [String],
-    default: []
-  },
-  specifications: {
-    type: mongoose.Schema.Types.Mixed, // Có thể chứa mảng thuộc tính hoặc đối tượng cấu hình chi tiết
-    default: []
+  isDeleted: {
+    type: Boolean,
+    default: false
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  strict: false // Cho phép các trường khác trong DB Atlas đi qua không bị lọc bỏ
 });
 
 module.exports = mongoose.model('Product', productSchema);

@@ -35,11 +35,8 @@ const formatProduct = (productDoc) => {
   let stock = doc.stock;
   if (stock === undefined || stock === 0) {
     if (doc.variants && Array.isArray(doc.variants) && doc.variants.length > 0) {
-      stock = doc.variants.reduce((acc, curr) => acc + (curr.stock_quantity || 0), 0);
+      stock = doc.variants.reduce((acc, curr) => acc + (curr.stock || 0), 0);
     }
-  }
-  if (stock === undefined || stock === 0) {
-    stock = doc.status === "active" ? 10 : 0;
   }
 
   // Lấy đánh giá (rating) từ trường ratings.average_rating hoặc rating
@@ -50,6 +47,9 @@ const formatProduct = (productDoc) => {
   if ((!colors || colors.length === 0) && doc.variants && Array.isArray(doc.variants)) {
     const extractedColors = [];
     doc.variants.forEach(variant => {
+      if (variant.color && !extractedColors.includes(variant.color)) {
+        extractedColors.push(variant.color);
+      }
       if (variant.attributes && Array.isArray(variant.attributes)) {
         const colorAttr = variant.attributes.find(attr => attr.name === 'Màu sắc' || attr.name === 'Color');
         if (colorAttr && colorAttr.value && !extractedColors.includes(colorAttr.value)) {
@@ -71,7 +71,21 @@ const formatProduct = (productDoc) => {
     ? doc.attributes
     : (doc.specifications || []);
 
-  const priceVal = doc.sale_price > 0 ? doc.sale_price : doc.price;
+  let priceVal = doc.price;
+  if (!priceVal && doc.variants && doc.variants.length > 0) {
+    priceVal = doc.variants[0].price;
+  }
+  if (doc.sale_price > 0) {
+    priceVal = doc.sale_price;
+  }
+
+  let imageVal = doc.image;
+  if (!imageVal && doc.variants && doc.variants.length > 0) {
+    imageVal = doc.variants[0].image || (doc.variants[0].images && doc.variants[0].images[0]);
+  }
+  if (!imageVal && Array.isArray(doc.images) && doc.images.length > 0) {
+    imageVal = doc.images[0];
+  }
 
   return {
     ...doc,
@@ -84,15 +98,15 @@ const formatProduct = (productDoc) => {
     description: doc.description || doc.short_description || "",
     shortDescription: doc.short_description || "",
     price: priceVal,
-    originalPrice: doc.price,
+    originalPrice: doc.price || priceVal,
     discountPercentage: doc.discount_percentage || 0,
-    images: Array.isArray(doc.images) ? doc.images : [],
-    image: Array.isArray(doc.images) && doc.images.length > 0 ? doc.images[0] : (doc.image || ""),
+    images: Array.isArray(doc.images) && doc.images.length > 0 ? doc.images : (imageVal ? [imageVal] : []),
+    image: imageVal || "",
     category: categoryName,
     categoryName: categoryName,
     categoryId,
     stock,
-    availability: stock > 0 || doc.status === "active" ? "In Stock" : "Out of Stock",
+    availability: stock > 0 ? "In Stock" : "Out of Stock",
     isFeatured: Boolean(doc.is_featured ?? doc.isFeatured),
     rating,
     colors,
@@ -113,15 +127,17 @@ exports.getProducts = async (req, res) => {
     // Lọc theo tên danh mục sản phẩm nếu có (hỗ trợ cả phẳng và object lồng từ DB cũ)
     if (category) {
       filter.$or = [
+        { category: category },
         { categoryName: category },
         { 'category.name': category }
       ];
     }
 
-    // Lọc theo từ khóa tìm kiếm (trong tên, mô tả hoặc thương hiệu) nếu có
+    // Lọc theo từ khóa tìm kiếm (trong tên, SKU, mô tả hoặc thương hiệu) nếu có
     if (search) {
       filter.$or = [
         { name: { $regex: search, $options: 'i' } },
+        { sku: { $regex: search, $options: 'i' } },
         { description: { $regex: search, $options: 'i' } },
         { brand: { $regex: search, $options: 'i' } }
       ];
@@ -130,9 +146,9 @@ exports.getProducts = async (req, res) => {
     // Xây dựng câu lệnh sắp xếp (sorting)
     let sortQuery = {};
     if (sort === 'price-asc') {
-      sortQuery = { price: 1 }; // Sắp xếp giá tăng dần
+      sortQuery = { 'variants.price': 1 }; // Sắp xếp giá tăng dần
     } else if (sort === 'price-desc') {
-      sortQuery = { price: -1 }; // Sắp xếp giá giảm dần
+      sortQuery = { 'variants.price': -1 }; // Sắp xếp giá giảm dần
     } else if (sort === 'name-az') {
       sortQuery = { name: 1 }; // Sắp xếp tên từ A đến Z
     } else {
@@ -212,12 +228,14 @@ exports.searchProducts = async (req, res) => {
       });
     }
 
-    // Tìm kiếm các sản phẩm khớp với từ khóa trong tên, mô tả hoặc thương hiệu hoặc danh mục
+    // Tìm kiếm các sản phẩm khớp với từ khóa trong tên, SKU, mô tả hoặc thương hiệu hoặc danh mục
     const searchFilter = {
       $or: [
         { name: { $regex: queryTerm, $options: 'i' } },
+        { sku: { $regex: queryTerm, $options: 'i' } },
         { description: { $regex: queryTerm, $options: 'i' } },
         { brand: { $regex: queryTerm, $options: 'i' } },
+        { category: { $regex: queryTerm, $options: 'i' } },
         { categoryName: { $regex: queryTerm, $options: 'i' } },
         { 'category.name': { $regex: queryTerm, $options: 'i' } }
       ]

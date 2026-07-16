@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { categories } from '../data/categories';
-import { products } from '../data/products';
 
 const COLOR_MAP = {
   'Black': '#000000',
@@ -38,6 +36,8 @@ const getColorHex = (colorName) => {
 const AVAILABILITY_OPTIONS = ['In Stock', 'Pre-order'];
 
 export default function CategorySidebar({
+  categories = [],
+  products = [],
   selectedCategories,
   onCategoryChange,
   priceLimit,
@@ -53,34 +53,22 @@ export default function CategorySidebar({
   isOpen,
   onClose
 }) {
-  const [categoriesList, setCategoriesList] = useState(categories);
-  const [productsList, setProductsList] = useState(products);
-
-  useEffect(() => {
-    fetch('http://localhost:5000/api/categories')
-      .then(res => res.json())
-      .then(resData => {
-        if (resData.success) {
-          setCategoriesList(resData.data);
-        }
-      })
-      .catch(err => console.error('Error fetching categories in sidebar:', err));
-
-    fetch('http://localhost:5000/api/products')
-      .then(res => res.json())
-      .then(resData => {
-        if (resData.success) {
-          setProductsList(resData.data);
-        }
-      })
-      .catch(err => console.error('Error fetching products in sidebar:', err));
-  }, []);
+  const categoriesList = categories;
+  const productsList = products;
 
   // Trích xuất các nhãn hiệu duy nhất từ danh sách sản phẩm thực tế
   const allBrands = [...new Set(productsList.map(p => p.brand))].filter(Boolean).sort();
 
   // Trích xuất các màu sắc duy nhất từ danh sách sản phẩm thực tế
-  const allColors = [...new Set(productsList.flatMap(p => p.colors || (p.color ? [p.color] : [])))].filter(Boolean).sort();
+  const allColors = [
+    ...new Set(
+      productsList.flatMap(p => 
+        p.variants && Array.isArray(p.variants)
+          ? p.variants.map(v => v.color).filter(Boolean)
+          : (p.colors || (p.color ? [p.color] : []))
+      )
+    )
+  ].filter(Boolean).sort();
 
   const handleCategoryToggle = (category) => {
     if (selectedCategories.includes(category)) {
