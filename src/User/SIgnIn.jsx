@@ -173,8 +173,8 @@ export default function LoginForm({ onSignInSuccess }) {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#1e1e24] p-4 overflow-y-auto">
-      <div className="w-full max-w-[420px] bg-white rounded-3xl p-8 flex flex-col items-center font-sans shadow-xl min-h-fit">
+    <div className="flex justify-center items-center min-h-screen bg-[#1e1e24] p-4">
+      <div className="w-full max-w-[420px] bg-white rounded-3xl p-8 flex flex-col items-center font-sans shadow-xl">
         <div className="mb-10 mt-4">
           <svg width="70" height="70" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="32" cy="20" r="10" stroke="black" strokeWidth="2.5" />
@@ -182,7 +182,7 @@ export default function LoginForm({ onSignInSuccess }) {
           </svg>
         </div>
 
-        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">
           <div className="text-center mb-3">
             <p className="text-xs uppercase tracking-[0.4em] text-gray-500">{view === 'register' ? 'Register' : 'Sign In'}</p>
             <h2 className="mt-2 text-3xl font-bold text-[#111111]">{view === 'register' ? 'Create Account' : 'Sign In'}</h2>
@@ -195,7 +195,7 @@ export default function LoginForm({ onSignInSuccess }) {
                 placeholder="Full name"
                 value={form.fullName}
                 onChange={(e) => handleChange('fullName', e.target.value)}
-                className="w-full px-5 py-4 border border-solid border-gray-300 bg-white rounded-2xl text-[15px] focus:outline-none focus:border-black transition-colors placeholder-gray-500"
+                className="w-full px-5 py-4 border border-gray-600 rounded-2xl text-[15px] focus:outline-none focus:border-black transition-colors placeholder-gray-500"
               />
               {errors.fullName && <p className="mt-2 text-sm text-red-500">{errors.fullName}</p>}
             </div>
@@ -207,7 +207,7 @@ export default function LoginForm({ onSignInSuccess }) {
               placeholder={view === 'register' ? 'Email' : 'Email or phone number'}
               value={form.email}
               onChange={(e) => handleChange('email', e.target.value)}
-              className="w-full px-5 py-4 border border-solid border-gray-300 bg-white rounded-2xl text-[15px] focus:outline-none focus:border-black transition-colors placeholder-gray-500"
+              className="w-full px-5 py-4 border border-gray-600 rounded-2xl text-[15px] focus:outline-none focus:border-black transition-colors placeholder-gray-500"
             />
             {errors.email && <p className="mt-2 text-sm text-red-500">{errors.email}</p>}
           </div>
@@ -219,7 +219,7 @@ export default function LoginForm({ onSignInSuccess }) {
                 placeholder="Phone number"
                 value={form.phone}
                 onChange={(e) => handleChange('phone', e.target.value)}
-                className="w-full px-5 py-4 border border-solid border-gray-300 bg-white rounded-2xl text-[15px] focus:outline-none focus:border-black transition-colors placeholder-gray-500"
+                className="w-full px-5 py-4 border border-gray-600 rounded-2xl text-[15px] focus:outline-none focus:border-black transition-colors placeholder-gray-500"
               />
               {errors.phone && <p className="mt-2 text-sm text-red-500">{errors.phone}</p>}
             </div>
@@ -232,7 +232,7 @@ export default function LoginForm({ onSignInSuccess }) {
                 placeholder="Address (optional)"
                 value={form.address}
                 onChange={(e) => handleChange('address', e.target.value)}
-                className="w-full px-5 py-4 border border-solid border-gray-300 bg-white rounded-2xl text-[15px] focus:outline-none focus:border-black transition-colors placeholder-gray-500"
+                className="w-full px-5 py-4 border border-gray-600 rounded-2xl text-[15px] focus:outline-none focus:border-black transition-colors placeholder-gray-500"
               />
             </div>
           )}
@@ -243,7 +243,7 @@ export default function LoginForm({ onSignInSuccess }) {
               placeholder="Password"
               value={form.password}
               onChange={(e) => handleChange('password', e.target.value)}
-              className="w-full px-5 py-4 border border-solid border-gray-300 bg-white rounded-2xl text-[15px] focus:outline-none focus:border-black transition-colors placeholder-gray-500"
+              className="w-full px-5 py-4 border border-gray-600 rounded-2xl text-[15px] pr-12 focus:outline-none focus:border-black transition-colors placeholder-gray-500"
             />
             <button
               type="button"
@@ -271,7 +271,7 @@ export default function LoginForm({ onSignInSuccess }) {
                 placeholder="Confirm password"
                 value={form.confirmPassword}
                 onChange={(e) => handleChange('confirmPassword', e.target.value)}
-                className="w-full px-5 py-4 border border-solid border-gray-300 bg-white rounded-2xl text-[15px] focus:outline-none focus:border-black transition-colors placeholder-gray-500"
+                className="w-full px-5 py-4 border border-gray-600 rounded-2xl text-[15px] focus:outline-none focus:border-black transition-colors placeholder-gray-500"
               />
               {errors.confirmPassword && <p className="mt-2 text-sm text-red-500">{errors.confirmPassword}</p>}
             </div>
@@ -296,7 +296,7 @@ export default function LoginForm({ onSignInSuccess }) {
           <div className="w-full flex justify-center mt-4">
             <button
               type="submit"
-              className="w-[65%] !bg-[#333333] hover:!bg-black !text-white font-bold py-3.5 px-6 rounded-2xl text-xl transition-all tracking-wide"
+              className="w-[65%] bg-[#333333] hover:bg-black text-white font-bold py-3.5 px-6 rounded-2xl text-xl transition-all tracking-wide"
             >
               {view === 'register' ? 'Sign Up' : 'Sign In'}
             </button>
