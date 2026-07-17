@@ -1,16 +1,4 @@
-<<<<<<< HEAD
 import React, { useState } from 'react';
-import LoginForm from './User/SIgnIn';
-import Profile from './User/Profile';
-
-function App() {
-  const [user, setUser] = useState(null);
-
-  return user ? (
-    <Profile userInfo={user} onSignOut={() => setUser(null)} />
-  ) : (
-    <LoginForm onSignInSuccess={setUser} />
-=======
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -19,9 +7,12 @@ import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import Contact from './pages/Contact';
 import About from './pages/About';
-import LoginForm from './components/SignIn';
+import LoginForm from './User/SIgnIn';
+import Profile from './User/Profile';
 
 function App() {
+  const [user, setUser] = useState(null);
+
   return (
     <Router>
       <Header />
@@ -32,7 +23,16 @@ function App() {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<LoginForm />} />
+          <Route 
+            path="/login" 
+            element={
+              user ? (
+                <Profile userInfo={user} onSignOut={() => setUser(null)} />
+              ) : (
+                <LoginForm onSignInSuccess={setUser} />
+              )
+            } 
+          />
           {/* Fallback route */}
           <Route path="*" element={
             <div className="container empty-state" style={{ padding: '120px 0' }}>
@@ -45,7 +45,6 @@ function App() {
       </main>
       <Footer />
     </Router>
->>>>>>> feature/product-module
   );
 }
 
