@@ -7,9 +7,16 @@ import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import Contact from './pages/Contact';
 import About from './pages/About';
-import LoginForm from './component/SignIn';
+import LoginForm from './User/SIgnIn.jsx';
+import Profile from './User/Profile.jsx';
+import Cart from './components/Cart.jsx';
+import Checkout from './components/Checkout.jsx';
+
+
+
 
 function AppContent() {
+  const initialItems = [];
   const [cartItems, setCartItems] = useState(initialItems);
   const [currentUser, setCurrentUser] = useState(() => {
     try {
