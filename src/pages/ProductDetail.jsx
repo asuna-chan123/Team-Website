@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { getProductImage, normalizeImagePath } from '../utils/imageHelper';
+import { useCart } from '../components/CartContext';
 
 // Helper to generate premium specifications based on product category
 const getCategorySpecs = (product) => {
@@ -58,6 +59,7 @@ const getCategorySpecs = (product) => {
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const { addToCart } = useCart();
   
   const [product, setProduct] = useState(null);
   const [relatedProductsList, setRelatedProductsList] = useState([]);
@@ -232,6 +234,7 @@ export default function ProductDetail() {
               cursor: isAvailable ? 'pointer' : 'not-allowed' 
             }}
             disabled={!isAvailable}
+            onClick={() => addToCart(product, 1)}
           >
             {isAvailable ? 'Add to Cart' : 'Out of Stock'}
           </button>

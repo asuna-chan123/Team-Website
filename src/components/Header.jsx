@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { useCart } from './CartContext';
 
 export default function Header() {
+  const { cartItems, setIsCartOpen } = useCart();
+  const cartItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -57,6 +60,13 @@ export default function Header() {
             POPULAR
           </NavLink>
           <NavLink 
+            to="/purchase-history" 
+            className={({ isActive }) => isActive ? 'active' : ''}
+            onClick={closeMenu}
+          >
+            MY ORDERS
+          </NavLink>
+          <NavLink 
             to="/contact" 
             className={({ isActive }) => isActive ? 'active' : ''}
             onClick={closeMenu}
@@ -82,14 +92,27 @@ export default function Header() {
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </Link>
+
+          {/* History Icon (Link to purchase history) */}
+          <Link to="/purchase-history" className="header-icon-btn" aria-label="Purchase History">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="header-icon">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </Link>
           
           {/* Cart Icon */}
-          <button className="header-icon-btn" aria-label="Cart">
+          <button className="header-icon-btn" onClick={() => setIsCartOpen(true)} aria-label="Cart" style={{ position: 'relative' }}>
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="header-icon">
               <circle cx="9" cy="21" r="1"></circle>
               <circle cx="20" cy="21" r="1"></circle>
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
             </svg>
+            {cartItemCount > 0 && (
+              <span className="cart-badge">
+                {cartItemCount}
+              </span>
+            )}
           </button>
 
           {/* Hamburger Icon for Mobile */}

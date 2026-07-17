@@ -91,7 +91,7 @@ const formatProduct = (productDoc) => {
     ...doc,
     id: doc.slug || (doc._id ? doc._id.toString() : ""),
     _id: doc._id,
-    name: doc.name,
+    name: doc.name || doc.product_name || "",
     slug: doc.slug,
     sku: doc.sku,
     brand: doc.brand,
