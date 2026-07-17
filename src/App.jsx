@@ -58,7 +58,7 @@ function AppContent() {
   const handleOrderSuccess = async (orderData) => {
     // Empty the cart
     setCartItems([]);
-    
+
     // Refresh user profile details to get updated purchaseHistory
     if (currentUser?.id) {
       try {
@@ -81,7 +81,7 @@ function AppContent() {
         console.error('Error refreshing user details:', error);
       }
     }
-    
+
     navigate('/profile');
   };
 
@@ -96,19 +96,19 @@ function AppContent() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={
-            <LoginForm 
+            <LoginForm
               onSignInSuccess={(user) => {
                 setCurrentUser(user);
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 const redirectPath = localStorage.getItem('redirectAfterLogin') || '/';
                 localStorage.removeItem('redirectAfterLogin');
                 navigate(redirectPath);
-              }} 
+              }}
             />
           } />
           <Route path="/profile" element={
-            <Profile 
-              userInfo={currentUser} 
+            <Profile
+              userInfo={currentUser}
               onSignOut={() => {
                 setCurrentUser(null);
                 localStorage.removeItem('currentUser');

@@ -10,4 +10,5 @@ const UserSchema = new mongoose.Schema({
   purchaseHistory: { type: Array, default: [] },
 }, { timestamps: true });
 
-module.exports = mongoose.model('User', UserSchema);
+const { createDynamicModel } = require('../utils/mockMongoose');
+module.exports = createDynamicModel('User', UserSchema);

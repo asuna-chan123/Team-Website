@@ -1,0 +1,35 @@
+[
+  {
+    "_id": "d2149e9e9419012847fe852e",
+    "username": "Thư Nguyễn",
+    "email": "nanhthu638@gmail.com",
+    "password": "$2b$10$cM5oi7NVnSEWLJ.e.HnyYOOd0F.7qNk4L5e0Cff9wg61rO4sq.SGq",
+    "phone": "1234567890",
+    "address": "1234567",
+    "purchaseHistory": [],
+    "createdAt": "2026-07-17T07:30:29.258Z",
+    "updatedAt": "2026-07-17T07:30:29.258Z"
+  },
+  {
+    "_id": "22d8737e44a1eba1e02c4022",
+    "username": "Nguyễn Văn A",
+    "email": "vănA@12gmail.com",
+    "password": "$2b$10$O5WnQl.szR4HstZ3Z23xDOlYLZnAM7X3oXPnubyV/q0koJs40j.NS",
+    "phone": "123456634",
+    "address": "1234567",
+    "purchaseHistory": [],
+    "createdAt": "2026-07-17T07:32:41.796Z",
+    "updatedAt": "2026-07-17T07:32:41.796Z"
+  },
+  {
+    "_id": "e243f760e1257fe21b7c47c6",
+    "username": "NguyenVanA",
+    "email": "vanA@12gmail.com",
+    "password": "$2b$10$Rm4WC7J3BdQ2yW.8xdcWIuipJ8sApFLAnSJnntfET8RIAi/Vo9urC",
+    "phone": "12345678909",
+    "address": "123456",
+    "purchaseHistory": [],
+    "createdAt": "2026-07-17T09:13:36.625Z",
+    "updatedAt": "2026-07-17T09:13:36.625Z"
+  }
+]
