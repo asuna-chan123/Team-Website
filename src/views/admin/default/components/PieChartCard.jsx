@@ -5,7 +5,8 @@ import Card from "components/card";
 const PieChartCard = ({ products = [] }) => {
   // Count products per category
   const catCounts = {};
-  products.forEach(p => {
+  const validProducts = Array.isArray(products) ? products : [];
+  validProducts.forEach(p => {
     catCounts[p.category] = (catCounts[p.category] || 0) + 1;
   });
 

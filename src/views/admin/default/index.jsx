@@ -28,15 +28,27 @@ export default function Dashboard() {
     try {
       const pRes = await fetch("http://localhost:5000/api/products");
       const pData = await pRes.json();
-      setProducts(pData);
+      if (Array.isArray(pData)) {
+        setProducts(pData);
+      } else {
+        console.error("Failed to fetch products array:", pData);
+      }
 
       const oRes = await fetch("http://localhost:5000/api/orders");
       const oData = await oRes.json();
-      setOrders(oData);
+      if (Array.isArray(oData)) {
+        setOrders(oData);
+      } else {
+        console.error("Failed to fetch orders array:", oData);
+      }
 
       const cRes = await fetch("http://localhost:5000/api/customers");
       const cData = await cRes.json();
-      setCustomers(cData);
+      if (Array.isArray(cData)) {
+        setCustomers(cData);
+      } else {
+        console.error("Failed to fetch customers array:", cData);
+      }
     } catch (err) {
       console.error("Error fetching dashboard data:", err);
     }
@@ -48,22 +60,26 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Calculate stats
-    const revenue = orders
+    const validOrders = Array.isArray(orders) ? orders : [];
+    const validProducts = Array.isArray(products) ? products : [];
+    const validCustomers = Array.isArray(customers) ? customers : [];
+
+    const revenue = validOrders
       .filter(o => o.status !== "Đã hủy")
       .reduce((sum, o) => sum + o.totalAmount, 0);
 
-    const pendingOrdersCount = orders.filter(o => o.status === "Chờ duyệt").length;
+    const pendingOrdersCount = validOrders.filter(o => o.status === "Chờ duyệt").length;
     
-    const lowStockCount = products.filter(p => {
+    const lowStockCount = validProducts.filter(p => {
       const totalStock = (p.variants || []).reduce((sum, v) => sum + v.stock, 0);
       return totalStock <= p.lowStockAlert;
     }).length;
 
     setStats({
       revenue,
-      ordersCount: orders.length,
-      customersCount: customers.length,
-      productsCount: products.length,
+      ordersCount: validOrders.length,
+      customersCount: validCustomers.length,
+      productsCount: validProducts.length,
       lowStockCount,
       pendingOrdersCount
     });

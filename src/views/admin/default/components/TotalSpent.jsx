@@ -18,7 +18,8 @@ const TotalSpent = ({ orders = [] }) => {
 
   // Calculate revenue for each of the last 6 months
   const monthlyRevenue = [0, 0, 0, 0, 0, 0];
-  orders.forEach(o => {
+  const validOrders = Array.isArray(orders) ? orders : [];
+  validOrders.forEach(o => {
     if (o.status !== "Đã hủy" && o.createdAt) {
       const orderDate = new Date(o.createdAt);
       const orderMonth = orderDate.getMonth();

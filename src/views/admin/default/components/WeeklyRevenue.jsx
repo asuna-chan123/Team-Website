@@ -7,8 +7,9 @@ const WeeklyRevenue = ({ orders = [] }) => {
   // Group orders by day of week
   // 0 is Sunday, 1 is Monday, ..., 6 is Saturday
   const daysRevenue = [0, 0, 0, 0, 0, 0, 0]; // Sun, Mon, Tue, Wed, Thu, Fri, Sat
+  const validOrders = Array.isArray(orders) ? orders : [];
 
-  orders.forEach(o => {
+  validOrders.forEach(o => {
     if (o.status !== "Đã hủy" && o.createdAt) {
       const date = new Date(o.createdAt);
       const day = date.getDay();
