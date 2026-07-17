@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { products } from '../data/products';
-import { categories } from '../data/categories';
 import ProductCard from '../components/ProductCard';
 
 // Category SVG Icons
@@ -38,27 +36,43 @@ const CategoryIcons = {
 
 export default function Home() {
   const navigate = useNavigate();
-  const [productsList, setProductsList] = useState(products);
-  const [categoriesList, setCategoriesList] = useState(categories);
+  const [productsList, setProductsList] = useState([]);
+  const [categoriesList, setCategoriesList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/products')
-      .then(res => res.json())
-      .then(resData => {
-        if (resData.success) {
-          setProductsList(resData.data);
-        }
-      })
-      .catch(err => console.error('Error fetching products:', err));
+    setLoading(true);
+    setError("");
 
-    fetch('http://localhost:5000/api/categories')
-      .then(res => res.json())
-      .then(resData => {
-        if (resData.success) {
-          setCategoriesList(resData.data);
-        }
-      })
-      .catch(err => console.error('Error fetching categories:', err));
+    Promise.all([
+      fetch('http://localhost:5000/api/products')
+        .then(res => res.json())
+        .then(resData => {
+          const list = Array.isArray(resData)
+            ? resData
+            : Array.isArray(resData.data)
+              ? resData.data
+              : [];
+          setProductsList(list);
+        }),
+      fetch('http://localhost:5000/api/categories')
+        .then(res => res.json())
+        .then(resData => {
+          const list = Array.isArray(resData)
+            ? resData
+            : Array.isArray(resData.data)
+              ? resData.data
+              : [];
+          setCategoriesList(list);
+        })
+    ])
+      .then(() => setLoading(false))
+      .catch(err => {
+        console.error('Error fetching data in Home:', err);
+        setError("Failed to load products. Please try again later.");
+        setLoading(false);
+      });
   }, []);
 
   // Get featured products (isFeatured === true, cap to 4 items)
@@ -70,6 +84,25 @@ export default function Home() {
   const handleCategoryClick = (categoryName) => {
     navigate(`/products?category=${categoryName}`);
   };
+
+  if (loading) {
+    return (
+      <div className="container" style={{ padding: '120px 0', textAlign: 'center' }}>
+        <h3 style={{ fontSize: '20px', fontWeight: 500 }}>Loading UpTech Collections...</h3>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container empty-state" style={{ padding: '120px 0', textAlign: 'center' }}>
+        <h2 style={{ color: 'var(--stock-out)' }}>{error}</h2>
+        <button className="btn btn-dark" onClick={() => window.location.reload()} style={{ marginTop: '16px' }}>
+          Retry Loading
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="home-page">

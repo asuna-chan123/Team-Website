@@ -5,7 +5,7 @@ let localConnection;
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI);
-    console.log(`MongoDB Connected (Cloud): ${conn.connection.host}`);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`MongoDB Connected (Cloud) Error: ${error.message}`);
     console.log('Attempting to connect to Local MongoDB...');

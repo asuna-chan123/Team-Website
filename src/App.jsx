@@ -7,29 +7,7 @@ import ProductList from './pages/ProductList';
 import ProductDetail from './pages/ProductDetail';
 import Contact from './pages/Contact';
 import About from './pages/About';
-import LoginForm from './User/SIgnIn';
-import Profile from './User/Profile';
-import Cart from './components/Cart';
-import Checkout from './components/Checkout';
-
-const initialItems = [
-  {
-    id: '6a51f50b0a59cffcab9d0aa5',
-    name: 'iPhone 17 Pro Max',
-    variant: 'Màu cam vũ trụ',
-    price: 35990000,
-    quantity: 1,
-    image: 'https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/42/342679/iphone-17-pro-max-cam-1-639174800885056316-750x500.jpg'
-  },
-  {
-    id: '6a51e1fc53a135e68160cefd',
-    name: 'Tai nghe Bluetooth Không Dây Hifi',
-    variant: 'Màu Đen',
-    price: 590000,
-    quantity: 1,
-    image: 'https://cdnv2.tgdd.vn/mwg-static/tgdd/Products/Images/54/367818/tai-nghe-bluetooth-chup-tai-sony-wh-1000xx-den-1-639165371248861166-750x500.jpg'
-  }
-];
+import LoginForm from './component/SignIn';
 
 function AppContent() {
   const [cartItems, setCartItems] = useState(initialItems);
