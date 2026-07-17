@@ -69,10 +69,9 @@ export default function Products() {
   const handleOpenEdit = (prod) => {
     setEditingId(prod._id);
     setSku(prod.sku);
-    setName(prod.name);
+    setName(prod.product_name);
     setDescription(prod.description || "");
     setCategory(prod.category);
-    setLowStockAlert(prod.lowStockAlert);
     
     // Map existing variants and add helper field for inputting new image URLs
     const mappedVariants = (prod.variants || []).map(v => ({
@@ -116,10 +115,9 @@ export default function Products() {
 
     const productData = {
       sku: finalSku,
-      name,
+      product_name: name,
       description,
       category,
-      lowStockAlert: Number(lowStockAlert),
       variants: cleanVariants
     };
 
@@ -220,7 +218,7 @@ export default function Products() {
 
   const filteredProducts = products.filter(p => {
     const term = searchTerm.toLowerCase();
-    const matchesName = p.name.toLowerCase().includes(term);
+    const matchesName = (p.product_name || "").toLowerCase().includes(term);
     const matchesSku = p.sku.toLowerCase().includes(term);
     
     const matchesVariants = (p.variants || []).some(v => 
@@ -310,19 +308,19 @@ export default function Products() {
                 const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
                 const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
                 
-                const isLowStock = totalStock <= p.lowStockAlert;
+                const isLowStock = totalStock <= 5;
 
                 return (
                   <tr key={p._id} className="text-sm font-medium text-navy-700 dark:text-white hover:bg-gray-50 dark:hover:bg-navy-700/50 transition">
                     <td className="py-4 px-4">
                       <img
                         src={primaryImg}
-                        alt={p.name}
+                        alt={p.product_name}
                         className="h-12 w-12 rounded-lg object-cover"
                       />
                     </td>
                     <td className="py-4 px-4">
-                      <p className="font-bold">{p.name}</p>
+                      <p className="font-bold">{p.product_name}</p>
                       <p className="text-xs text-gray-400">{p.sku}</p>
                     </td>
                     <td className="py-4 px-4 text-gray-500 dark:text-gray-400">{p.category}</td>
@@ -443,15 +441,6 @@ export default function Products() {
                     ))}
                   </select>
                 </div>
-                <InputField
-                  label="Mức cảnh báo sắp hết*"
-                  id="lowStockAlert"
-                  type="number"
-                  placeholder="Mức cảnh báo tồn kho"
-                  value={lowStockAlert}
-                  onChange={(e) => setLowStockAlert(e.target.value)}
-                  extra="w-full"
-                />
               </div>
 
               {/* Dynamic Variants and Images Section */}
@@ -632,7 +621,7 @@ export default function Products() {
             <div className="flex flex-col gap-4">
               <div>
                 <span className="rounded bg-lightPrimary px-2.5 py-1 text-xs font-semibold text-brand-500 dark:bg-navy-700 dark:text-white">{selectedProduct.category}</span>
-                <h2 className="mt-2 text-2xl font-bold text-navy-700 dark:text-white">{selectedProduct.name}</h2>
+                <h2 className="mt-2 text-2xl font-bold text-navy-700 dark:text-white">{selectedProduct.product_name}</h2>
                 <p className="text-sm text-gray-400">Mã SKU: {selectedProduct.sku}</p>
               </div>
 

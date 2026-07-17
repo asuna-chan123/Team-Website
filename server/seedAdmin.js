@@ -1,6 +1,6 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const User = require('./models/User');
+const Admin = require('./models/Admin');
 
 const seedAdmin = async () => {
   try {
@@ -14,14 +14,14 @@ const seedAdmin = async () => {
     console.log('Connected to MongoDB');
 
     // Check if admin already exists
-    const existingAdmin = await User.findOne({ email: 'admin@admin.com' });
+    const existingAdmin = await Admin.findOne({ email: 'admin@admin.com' });
     if (existingAdmin) {
       console.log('Admin user already exists!');
       process.exit(0);
     }
 
     // Create new admin user
-    const admin = new User({
+    const admin = new Admin({
       email: 'admin@admin.com',
       password: 'admin123'
     });

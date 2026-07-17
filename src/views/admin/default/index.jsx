@@ -72,7 +72,7 @@ export default function Dashboard() {
     
     const lowStockCount = validProducts.filter(p => {
       const totalStock = (p.variants || []).reduce((sum, v) => sum + v.stock, 0);
-      return totalStock <= p.lowStockAlert;
+      return totalStock <= 5;
     }).length;
 
     setStats({
@@ -98,7 +98,7 @@ export default function Dashboard() {
         <Widget
           icon={<MdBarChart className="h-7 w-7" />}
           title={"Tổng doanh thu"}
-          subtitle={`${stats.revenue.toLocaleString('vi-VN')}đ`}
+          subtitle={`${(stats.revenue || 0).toLocaleString('vi-VN')}đ`}
         />
         <Widget
           icon={<MdReceipt className="h-6 w-6" />}
@@ -159,7 +159,7 @@ export default function Dashboard() {
                       <p className="font-semibold">{o.shippingInfo?.recipientName}</p>
                       <p className="text-xs text-gray-400">{o.customerEmail}</p>
                     </td>
-                    <td className="py-3 font-semibold">{o.totalAmount.toLocaleString('vi-VN')}đ</td>
+                    <td className="py-3 font-semibold">{(o.totalAmount || 0).toLocaleString('vi-VN')}đ</td>
                     <td className="py-3">
                       {o.status === "Chờ duyệt" && <span className="rounded bg-yellow-100 px-2 py-0.5 text-xs text-yellow-800">Chờ duyệt</span>}
                       {o.status === "Đang xử lý" && <span className="rounded bg-blue-100 px-2 py-0.5 text-xs text-blue-800">Đang xử lý</span>}

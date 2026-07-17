@@ -13,7 +13,7 @@ const WeeklyRevenue = ({ orders = [] }) => {
     if (o.status !== "Đã hủy" && o.createdAt) {
       const date = new Date(o.createdAt);
       const day = date.getDay();
-      daysRevenue[day] += o.totalAmount;
+      daysRevenue[day] += (o.totalAmount || 0);
     }
   });
 

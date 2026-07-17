@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const orderProductSchema = new mongoose.Schema({
+  product_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
+  },
   productSku: {
     type: String,
     required: true
@@ -21,6 +25,11 @@ const orderProductSchema = new mongoose.Schema({
 }, { _id: false });
 
 const orderSchema = new mongoose.Schema({
+  order_id: {
+    type: String,
+    required: true,
+    unique: true
+  },
   orderNumber: {
     type: String,
     required: true,
@@ -36,7 +45,7 @@ const orderSchema = new mongoose.Schema({
       required: true
     },
     phone: {
-      type: String,
+      type: Number,
       required: true
     },
     address: {
@@ -45,10 +54,6 @@ const orderSchema = new mongoose.Schema({
     }
   },
   products: [orderProductSchema],
-  totalAmount: {
-    type: Number,
-    required: true
-  },
   status: {
     type: String,
     enum: ['Chờ duyệt', 'Đang xử lý', 'Đang giao', 'Đã giao thành công', 'Đã hủy'],
@@ -57,14 +62,6 @@ const orderSchema = new mongoose.Schema({
   trackingNumber: {
     type: String,
     default: ''
-  },
-  carrier: {
-    type: String,
-    default: ''
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false
   }
 }, { timestamps: true });
 

@@ -25,7 +25,7 @@ const TotalSpent = ({ orders = [] }) => {
       const orderMonth = orderDate.getMonth();
       const index = recentMonthsIndex.indexOf(orderMonth);
       if (index > -1) {
-        monthlyRevenue[index] += o.totalAmount;
+        monthlyRevenue[index] += (o.totalAmount || 0);
       }
     }
   });

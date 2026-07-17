@@ -2,22 +2,23 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Category = require('./models/Category');
 const Product = require('./models/Product');
-const Customer = require('./models/Customer');
+const User = require('./models/User');
 const Order = require('./models/Order');
 
 const categories = [
-  { name: 'Thời trang', description: 'Quần áo, phụ kiện thời trang nam nữ' },
-  { name: 'Điện tử', description: 'Điện thoại, máy tính, phụ kiện công nghệ' },
-  { name: 'Gia dụng', description: 'Đồ dùng nhà bếp, trang trí nhà cửa' }
+  { category_id: 'cat_thoitrang', name: 'Thời trang' },
+  { category_id: 'cat_dientu', name: 'Điện tử' },
+  { category_id: 'cat_giadung', name: 'Gia dụng' }
 ];
 
 const products = [
   {
+    products_id: 'prod_polo',
     sku: 'SP001',
-    name: 'Áo thun Polo Nam Cotton',
+    product_name: 'Áo thun Polo Nam Cotton',
     description: 'Chất liệu 100% cotton thoáng mát, thấm hút mồ hôi tốt.',
-    category: 'Thời trang',
-    lowStockAlert: 10,
+    category: 'cat_thoitrang',
+    isDeleted: 0,
     variants: [
       {
         name: 'Màu Đen - Size M',
@@ -34,11 +35,12 @@ const products = [
     ]
   },
   {
+    products_id: 'prod_vayhoa',
     sku: 'SP002',
-    name: 'Váy Hoa Nhí Vintage',
+    product_name: 'Váy Hoa Nhí Vintage',
     description: 'Thiết kế vintage nhẹ nhàng, phù hợp đi chơi, đi dạo phố.',
-    category: 'Thời trang',
-    lowStockAlert: 5,
+    category: 'cat_thoitrang',
+    isDeleted: 0,
     variants: [
       {
         name: 'Màu Vàng - Size S',
@@ -55,11 +57,12 @@ const products = [
     ]
   },
   {
+    products_id: 'prod_tainghe',
     sku: 'SP003',
-    name: 'Tai nghe Bluetooth Không Dây Hifi',
+    product_name: 'Tai nghe Bluetooth Không Dây Hifi',
     description: 'Âm thanh sống động, chống ồn chủ động ANC, pin trâu 24h.',
-    category: 'Điện tử',
-    lowStockAlert: 5,
+    category: 'cat_dientu',
+    isDeleted: 0,
     variants: [
       {
         name: 'Màu Đen',
@@ -77,39 +80,22 @@ const products = [
   }
 ];
 
-const customers = [
+const users = [
   {
-    name: 'Nguyễn Văn A',
+    user_id: 'user_a',
+    user_name: 'Nguyễn Văn A',
     email: 'nguyenvana@gmail.com',
-    phone: '0987654321',
+    password: 'password123',
     address: '123 Đường Láng, Đống Đa, Hà Nội',
-    group: 'VIP'
+    phone: '0987654321'
   },
   {
-    name: 'Trần Thị B',
+    user_id: 'user_b',
+    user_name: 'Trần Thị B',
     email: 'tranthib@gmail.com',
-    phone: '0901234567',
+    password: 'password123',
     address: '456 Lê Lợi, Quận 1, TP. Hồ Chí Minh',
-    group: 'Thân thiết'
-  }
-];
-
-const orders = [
-  {
-    orderNumber: 'DH001',
-    customerEmail: 'nguyenvana@gmail.com',
-    shippingInfo: {
-      recipientName: 'Nguyễn Văn A',
-      phone: '0987654321',
-      address: '123 Đường Láng, Đống Đa, Hà Nội'
-    },
-    products: [
-      { productSku: 'SP001', productName: 'Áo thun Polo Nam Cotton (Màu Đen - Size M)', quantity: 2, price: 199000 }
-    ],
-    totalAmount: 398000,
-    status: 'Chờ duyệt',
-    trackingNumber: '',
-    carrier: ''
+    phone: '0901234567'
   }
 ];
 
@@ -126,18 +112,42 @@ const seedData = async () => {
 
     await Category.deleteMany({});
     await Product.deleteMany({});
-    await Customer.deleteMany({});
+    await User.deleteMany({});
     await Order.deleteMany({});
     console.log('Cleared existing data.');
 
     await Category.insertMany(categories);
     console.log('Seeded categories');
 
-    await Product.insertMany(products);
+    const insertedProducts = await Product.insertMany(products);
     console.log('Seeded products with variants');
 
-    await Customer.insertMany(customers);
-    console.log('Seeded customers');
+    await User.insertMany(users);
+    console.log('Seeded users');
+
+    const orders = [
+      {
+        order_id: 'ord_001',
+        orderNumber: 'DH001',
+        customerEmail: 'nguyenvana@gmail.com',
+        shippingInfo: {
+          recipientName: 'Nguyễn Văn A',
+          phone: 987654321,
+          address: '123 Đường Láng, Đống Đa, Hà Nội'
+        },
+        products: [
+          {
+            product_id: insertedProducts[0]._id,
+            productSku: 'SP001',
+            productName: 'Áo thun Polo Nam Cotton (Màu Đen - Size M)',
+            quantity: 2,
+            price: 199000
+          }
+        ],
+        status: 'Chờ duyệt',
+        trackingNumber: ''
+      }
+    ];
 
     await Order.insertMany(orders);
     console.log('Seeded orders');

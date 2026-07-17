@@ -1,15 +1,10 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
-  user_id: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  user_name: {
-    type: String,
-    required: true
+const adminSchema = new mongoose.Schema({
+  admin_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: () => new mongoose.Types.ObjectId()
   },
   email: {
     type: String,
@@ -19,19 +14,11 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
-  },
-  address: {
-    type: String,
-    required: true
-  },
-  phone: {
-    type: String,
-    required: true
   }
 }, { timestamps: true });
 
 // Pre-save hook to hash password before saving
-userSchema.pre('save', async function() {
+adminSchema.pre('save', async function() {
   if (!this.isModified('password')) return;
   
   try {
@@ -43,8 +30,8 @@ userSchema.pre('save', async function() {
 });
 
 // Method to verify password
-userSchema.methods.comparePassword = async function(candidatePassword) {
+adminSchema.methods.comparePassword = async function(candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Admin', adminSchema);

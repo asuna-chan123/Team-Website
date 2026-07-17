@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const variantSchema = new mongoose.Schema({
+  variant_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: () => new mongoose.Types.ObjectId()
+  },
   name: {
     type: String,
     required: true
@@ -20,12 +24,17 @@ const variantSchema = new mongoose.Schema({
 });
 
 const productSchema = new mongoose.Schema({
+  products_id: {
+    type: String,
+    required: true,
+    unique: true
+  },
   sku: {
     type: String,
     required: true,
     unique: true
   },
-  name: {
+  product_name: {
     type: String,
     required: true
   },
@@ -38,14 +47,9 @@ const productSchema = new mongoose.Schema({
     required: true
   },
   variants: [variantSchema],
-  lowStockAlert: {
-    type: Number,
-    required: true,
-    default: 5
-  },
   isDeleted: {
-    type: Boolean,
-    default: false
+    type: Number,
+    default: 0
   }
 }, { timestamps: true });
 

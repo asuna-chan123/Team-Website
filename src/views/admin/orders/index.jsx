@@ -115,7 +115,7 @@ export default function Orders() {
 
     // Check if variant already added
     const itemSku = product.sku;
-    const fullProductName = `${product.name} (${variant.name})`;
+    const fullProductName = `${product.product_name} (${variant.name})`;
 
     const existingIndex = orderItems.findIndex(item => item.productSku === itemSku && item.productName === fullProductName);
     if (existingIndex > -1) {
@@ -126,6 +126,7 @@ export default function Orders() {
       setOrderItems([
         ...orderItems,
         {
+          product_id: product._id,
           productSku: itemSku,
           productName: fullProductName,
           quantity: Number(itemQty),
@@ -430,7 +431,7 @@ export default function Orders() {
                       className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-gray-200 bg-white p-3 text-sm outline-none dark:border-white/10 dark:bg-navy-800 dark:text-white"
                     >
                       {products.map((p, idx) => (
-                        <option key={p._id} value={idx}>{p.name} ({p.sku})</option>
+                        <option key={p._id} value={idx}>{p.product_name} ({p.sku})</option>
                       ))}
                     </select>
                   </div>
