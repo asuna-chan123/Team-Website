@@ -57,7 +57,7 @@ export default function Products() {
     setName("");
     setDescription("");
     setCategory(categories[0]?.name || "");
-    setLowStockAlert("5");
+    setLowStockAlert("15");
     setVariants([{ name: "Mặc định", price: 0, stock: 0, images: [], imgInput: "" }]);
   };
 
@@ -308,7 +308,7 @@ export default function Products() {
                 const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
                 const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
                 
-                const isLowStock = totalStock <= 5;
+                const isLowStock = totalStock <= 15;
 
                 return (
                   <tr key={p._id} className="text-sm font-medium text-navy-700 dark:text-white hover:bg-gray-50 dark:hover:bg-navy-700/50 transition">

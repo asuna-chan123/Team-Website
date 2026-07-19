@@ -3,7 +3,7 @@ import MiniCalendar from "components/calendar/MiniCalendar";
 import WeeklyRevenue from "views/admin/default/components/WeeklyRevenue";
 import TotalSpent from "views/admin/default/components/TotalSpent";
 import PieChartCard from "views/admin/default/components/PieChartCard";
-import DailyTraffic from "views/admin/default/components/DailyTraffic";
+import TopSellingProducts from "views/admin/default/components/TopSellingProducts";
 import { IoMdHome } from "react-icons/io";
 import { IoDocuments } from "react-icons/io5";
 import { MdBarChart, MdDashboard, MdPeople, MdWarning, MdShoppingBag, MdReceipt } from "react-icons/md";
@@ -72,7 +72,7 @@ export default function Dashboard() {
     
     const lowStockCount = validProducts.filter(p => {
       const totalStock = (p.variants || []).reduce((sum, v) => sum + v.stock, 0);
-      return totalStock <= 5;
+      return totalStock <= 15;
     }).length;
 
     setStats({
@@ -181,7 +181,7 @@ export default function Dashboard() {
 
         {/* Traffic chart & Pie Chart */}
         <div className="flex flex-col gap-5">
-          <DailyTraffic orders={orders} />
+          <TopSellingProducts />
           <PieChartCard products={products} />
           <Card extra="p-5">
             <h2 className="text-lg font-bold text-navy-700 dark:text-white mb-3">Lịch làm việc</h2>

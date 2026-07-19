@@ -230,9 +230,9 @@ export default function Customers() {
                       <button
                         onClick={() => handleOpenHistory(c)}
                         className="rounded-lg p-2 text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition"
-                        title="Xem lịch sử mua hàng"
+                        title="Xem chi tiết & lịch sử đặt hàng"
                       >
-                        <MdHistory className="h-5 w-5" />
+                        <MdPerson className="h-5 w-5" />
                       </button>
                       <button
                         onClick={() => handleToggleLock(c)}
@@ -333,7 +333,7 @@ export default function Customers() {
         </div>
       )}
 
-      {/* History Transaction Modal */}
+      {/* Detail Customer & Transaction History Modal */}
       {showHistoryModal && selectedCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl dark:bg-navy-800 dark:text-white max-h-[85vh] overflow-y-auto">
@@ -343,12 +343,58 @@ export default function Customers() {
             >
               <MdClose className="h-6 w-6" />
             </button>
-            <h2 className="mb-2 text-xl font-bold">Lịch sử giao dịch: {selectedCustomer.name}</h2>
-            <p className="mb-4 text-sm text-gray-400">Email: {selectedCustomer.email} | SĐT: {selectedCustomer.phone}</p>
+            <h2 className="mb-4 text-xl font-bold border-b pb-2 dark:border-white/10 flex items-center gap-2">
+              <MdPerson className="text-brand-500 h-6 w-6" />
+              Chi tiết Khách hàng: {selectedCustomer.name}
+            </h2>
+            
+            {/* Customer Information Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 bg-gray-50 dark:bg-navy-700/30 p-4 rounded-xl">
+              <div>
+                <p className="text-xs text-gray-400 font-bold uppercase">Họ và Tên</p>
+                <p className="font-semibold text-navy-700 dark:text-white">{selectedCustomer.name}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 font-bold uppercase">Email</p>
+                <p className="font-semibold text-navy-700 dark:text-white">{selectedCustomer.email}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 font-bold uppercase">Số điện thoại</p>
+                <p className="font-semibold text-navy-700 dark:text-white">{selectedCustomer.phone || "Chưa cập nhật"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 font-bold uppercase">Địa chỉ</p>
+                <p className="font-semibold text-navy-700 dark:text-white truncate" title={selectedCustomer.address}>
+                  {selectedCustomer.address || "Chưa cập nhật"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 font-bold uppercase">Phân nhóm / Trạng thái</p>
+                <div className="flex items-center gap-2 mt-1">
+                  {getGroupBadge(selectedCustomer.group)}
+                  {selectedCustomer.status === "Locked" ? (
+                    <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-bold text-red-800">Đã Khóa</span>
+                  ) : (
+                    <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-bold text-green-800">Hoạt động</span>
+                  )}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 font-bold uppercase">Tổng chi tiêu</p>
+                <p className="text-lg font-bold text-brand-500 mt-0.5">
+                  {(selectedCustomer.totalSpent || 0).toLocaleString('vi-VN')}đ
+                </p>
+              </div>
+            </div>
 
-            <div className="space-y-4">
+            <h3 className="mb-3 text-lg font-bold flex items-center gap-2">
+              <MdHistory className="text-brand-500 h-5 w-5" />
+              Lịch sử đơn hàng ({historyOrders.length} đơn)
+            </h3>
+
+            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
               {historyOrders.map((o) => (
-                <div key={o._id} className="rounded-xl border border-gray-100 p-4 dark:border-white/10">
+                <div key={o._id} className="rounded-xl border border-gray-100 p-4 dark:border-white/10 bg-white dark:bg-navy-800/50">
                   <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center mb-2">
                     <div>
                       <span className="font-bold text-brand-500">{o.orderNumber}</span>
@@ -381,7 +427,9 @@ export default function Customers() {
               ))}
 
               {historyOrders.length === 0 && (
-                <div className="py-8 text-center text-gray-500 italic">Khách hàng chưa có giao dịch nào.</div>
+                <div className="py-8 text-center text-gray-500 italic border border-dashed rounded-xl dark:border-white/10">
+                  Khách hàng chưa có giao dịch nào.
+                </div>
               )}
             </div>
 

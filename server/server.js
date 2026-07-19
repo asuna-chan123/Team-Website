@@ -597,6 +597,56 @@ app.get('/api/stats/top-selling', async (req, res) => {
   }
 });
 
+// Truy vấn phức tạp bổ sung: Thống kê doanh thu theo Thứ trong tuần (Revenue by Day of Week)
+// Sử dụng Aggregation Pipeline: $match (lọc đơn hợp lệ) -> $project (tính tổng tiền & trích xuất dayOfWeek từ createdAt) -> $group (nhóm theo thứ) -> $sort (thứ tự từ 1-Chủ nhật đến 7-Thứ Bảy)
+app.get('/api/stats/weekly-revenue', async (req, res) => {
+  try {
+    const weeklyStats = await Order.aggregate([
+      // Bước 1: $match - Loại bỏ các đơn hàng đã bị hủy
+      {
+        $match: {
+          status: { $ne: 'Đã hủy' }
+        }
+      },
+      // Bước 2: $project - Tính tổng tiền đơn hàng (price * quantity) và lấy Thứ trong tuần (GMT+7)
+      // Hàm $dayOfWeek của MongoDB trả về: 1 (Chủ Nhật), 2 (Thứ Hai), ..., 7 (Thứ Bảy)
+      {
+        $project: {
+          totalAmount: {
+            $sum: {
+              $map: {
+                input: '$products',
+                as: 'p',
+                in: { $multiply: [{ $ifNull: ['$$p.price', 0] }, { $ifNull: ['$$p.quantity', 0] }] }
+              }
+            }
+          },
+          dayOfWeek: {
+            $dayOfWeek: { date: '$createdAt', timezone: '+07:00' }
+          }
+        }
+      },
+      // Bước 3: $group - Nhóm theo Thứ trong tuần và cộng dồn doanh thu + số lượng đơn hàng
+      {
+        $group: {
+          _id: '$dayOfWeek',
+          revenue: { $sum: '$totalAmount' },
+          orderCount: { $sum: 1 }
+        }
+      },
+      // Bước 4: $sort - Sắp xếp từ Chủ Nhật (1) đến Thứ Bảy (7)
+      {
+        $sort: { _id: 1 }
+      }
+    ]);
+    
+    res.json(weeklyStats);
+  } catch (error) {
+    console.error('Error in weekly revenue aggregation:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Truy vấn phức tạp số 5: Bộ lọc đơn hàng nâng cao hỗ trợ phân trang & Index (Advanced Order Filter with Indexes)
 // Tận dụng Compound Index { status: 1, customerEmail: 1, createdAt: -1 } và Single Index { customerEmail: 1 } để tìm kiếm cực nhanh
 app.get('/api/orders/search', async (req, res) => {
