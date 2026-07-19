@@ -77,6 +77,57 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
+// Endpoint lấy danh sách biến thể sản phẩm có tồn kho thấp (<= 15)
+// Sử dụng MongoDB Aggregation Pipeline theo đúng cấu trúc yêu cầu:
+// $match (chưa xóa) -> $unwind (tách variants) -> $match (tồn kho <= 15) -> $project (chọn trường) -> $sort (sắp xếp tăng dần)
+app.get('/api/products/low-stock', async (req, res) => {
+  try {
+    const lowStockVariants = await Product.aggregate([
+      // Bước 1: $match - Lọc sản phẩm chưa bị xóa (isDeleted khác 1)
+      {
+        $match: {
+          isDeleted: { $ne: 1 }
+        }
+      },
+      // Bước 2: $unwind - Tách mảng variants[] thành các documents (dòng) riêng lẻ
+      {
+        $unwind: '$variants'
+      },
+      // Bước 3: $match - Lọc các biến thể có tồn kho <= 15
+      {
+        $match: {
+          'variants.stock': { $lte: 15 }
+        }
+      },
+      // Bước 4: $project - Chọn các trường cần hiển thị và định dạng lại cấu trúc đầu ra
+      {
+        $project: {
+          _id: 1,
+          products_id: 1,
+          sku: 1,
+          product_name: 1,
+          category: 1,
+          variant_name: '$variants.name',
+          variant_price: '$variants.price',
+          variant_stock: '$variants.stock',
+          variant_images: '$variants.images'
+        }
+      },
+      // Bước 5: $sort - Sắp xếp theo lượng tồn kho (variant_stock) tăng dần (1: ascending)
+      {
+        $sort: {
+          variant_stock: 1
+        }
+      }
+    ]);
+    
+    res.json(lowStockVariants);
+  } catch (error) {
+    console.error('Error in low-stock aggregation:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.post('/api/products', async (req, res) => {
   try {
     if (!req.body.products_id) {
@@ -161,33 +212,66 @@ app.delete('/api/categories/:id', async (req, res) => {
 // ----------------------------------------------------
 // CUSTOMER CRUD (using User model)
 // ----------------------------------------------------
+// Truy vấn phức tạp số 2: Báo cáo khách hàng (Sử dụng Aggregation Pipeline kết hợp $lookup và $project để tính tổng chi tiêu + số đơn hàng trực tiếp từ DB)
 app.get('/api/customers', async (req, res) => {
   try {
-    const users = await User.find({}).sort({ createdAt: -1 });
-    const result = [];
-    for (let u of users) {
-      const orders = await Order.find({ customerEmail: u.email });
-      const totalOrders = orders.length;
-      const totalSpent = orders.reduce((sum, o) => {
-        if (o.status === 'Đã hủy') return sum;
-        const orderTotal = (o.products || []).reduce((s, p) => s + ((p.price || 0) * (p.quantity || 0)), 0);
-        return sum + orderTotal;
-      }, 0);
-
-      result.push({
-        _id: u._id,
-        user_id: u.user_id,
-        name: u.user_name,
-        email: u.email,
-        phone: u.phone,
-        address: u.address,
-        group: 'Mới',
-        status: 'Active',
-        totalOrders,
-        totalSpent
-      });
-    }
-    res.json(result);
+    const customers = await User.aggregate([
+      // Bước 1: $lookup - Liên kết collection User với collection orders bằng email khách hàng
+      {
+        $lookup: {
+          from: 'orders',
+          localField: 'email',
+          foreignField: 'customerEmail',
+          as: 'orders'
+        }
+      },
+      // Bước 2: $project - Tính toán tổng số đơn hàng và tổng chi tiêu trực tiếp
+      {
+        $project: {
+          _id: 1,
+          user_id: 1,
+          name: '$user_name',
+          email: 1,
+          phone: 1,
+          address: 1,
+          group: { $literal: 'Mới' },
+          status: { $literal: 'Active' },
+          // $size dùng để đếm số lượng phần tử của mảng đơn hàng (số đơn)
+          totalOrders: { $size: '$orders' },
+          // Tính tổng chi tiêu của các đơn hàng không bị hủy
+          totalSpent: {
+            $sum: {
+              $map: {
+                input: {
+                  // Lọc bỏ các đơn hàng có trạng thái "Đã hủy"
+                  $filter: {
+                    input: '$orders',
+                    as: 'order',
+                    cond: { $ne: ['$$order.status', 'Đã hủy'] }
+                  }
+                },
+                as: 'o',
+                // Đối với mỗi đơn hàng hợp lệ, tính tổng tiền của tất cả sản phẩm (price * quantity)
+                in: {
+                  $sum: {
+                    $map: {
+                      input: { $ifNull: ['$$o.products', []] },
+                      as: 'p',
+                      in: { $multiply: [{ $ifNull: ['$$p.price', 0] }, { $ifNull: ['$$p.quantity', 0] }] }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      // Bước 3: $sort - Sắp xếp theo khách hàng mới đăng ký lên đầu
+      {
+        $sort: { _id: -1 }
+      }
+    ]);
+    res.json(customers);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -403,6 +487,170 @@ app.delete('/api/orders/:id', async (req, res) => {
     const order = await Order.findByIdAndDelete(req.params.id);
     if (!order) return res.status(404).json({ message: 'Order not found' });
     res.json({ message: 'Order deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// ----------------------------------------------------
+// THỐNG KÊ & TRUY VẤN PHỨC TẠP BỔ SUNG
+// ----------------------------------------------------
+
+// Truy vấn phức tạp số 3: Báo cáo doanh thu theo danh mục sản phẩm (Category Revenue Statistics)
+// Sử dụng Aggregation Pipeline: $match (đơn hợp lệ) -> $unwind (tách products) -> $lookup (lấy thông tin danh mục từ Product) -> $group (nhóm theo category) -> $project -> $sort
+app.get('/api/stats/category-revenue', async (req, res) => {
+  try {
+    const revenueStats = await Order.aggregate([
+      // Bước 1: Lọc bỏ các đơn hàng đã bị hủy
+      {
+        $match: {
+          status: { $ne: 'Đã hủy' }
+        }
+      },
+      // Bước 2: Tách mảng products trong đơn hàng thành từng dòng để tính toán
+      {
+        $unwind: '$products'
+      },
+      // Bước 3: Liên kết với collection products bằng product_id để lấy trường category
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'products.product_id',
+          foreignField: '_id',
+          as: 'productDetail'
+        }
+      },
+      // Bước 4: Phẳng hóa thông tin sản phẩm sau khi lookup
+      {
+        $unwind: '$productDetail'
+      },
+      // Bước 5: Nhóm theo category và cộng dồn doanh thu (price * quantity) + tổng số lượng bán ra
+      {
+        $group: {
+          _id: '$productDetail.category',
+          totalRevenue: {
+            $sum: { $multiply: ['$products.price', '$products.quantity'] }
+          },
+          totalQuantitySold: {
+            $sum: '$products.quantity'
+          }
+        }
+      },
+      // Bước 6: Làm đẹp đầu ra hiển thị
+      {
+        $project: {
+          _id: 0,
+          category: '$_id',
+          totalRevenue: 1,
+          totalQuantitySold: 1
+        }
+      },
+      // Bước 7: Sắp xếp theo doanh thu giảm dần
+      {
+        $sort: {
+          totalRevenue: -1
+        }
+      }
+    ]);
+    res.json(revenueStats);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Truy vấn phức tạp số 4: Top 5 sản phẩm bán chạy nhất (Top 5 Best Selling Products)
+// Sử dụng Aggregation Pipeline: $match -> $unwind -> $group (tính tổng lượng bán) -> $sort -> $limit
+app.get('/api/stats/top-selling', async (req, res) => {
+  try {
+    const topProducts = await Order.aggregate([
+      // Bước 1: Lọc bỏ các đơn hàng đã bị hủy
+      {
+        $match: {
+          status: { $ne: 'Đã hủy' }
+        }
+      },
+      // Bước 2: Tách mảng sản phẩm trong đơn hàng
+      {
+        $unwind: '$products'
+      },
+      // Bước 3: Nhóm theo sku của sản phẩm và tính tổng số lượng bán ra + tổng doanh thu
+      {
+        $group: {
+          _id: '$products.productSku',
+          productName: { $first: '$products.productName' },
+          totalQty: { $sum: '$products.quantity' },
+          totalRevenue: { $sum: { $multiply: ['$products.price', '$products.quantity'] } }
+        }
+      },
+      // Bước 4: Sắp xếp theo tổng số lượng đã bán giảm dần
+      {
+        $sort: { totalQty: -1 }
+      },
+      // Bước 5: Giới hạn chỉ lấy Top 5 sản phẩm
+      {
+        $limit: 5
+      }
+    ]);
+    res.json(topProducts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Truy vấn phức tạp số 5: Bộ lọc đơn hàng nâng cao hỗ trợ phân trang & Index (Advanced Order Filter with Indexes)
+// Tận dụng Compound Index { status: 1, customerEmail: 1, createdAt: -1 } và Single Index { customerEmail: 1 } để tìm kiếm cực nhanh
+app.get('/api/orders/search', async (req, res) => {
+  try {
+    const { status, email, startDate, endDate, page = 1, limit = 10 } = req.query;
+    const filter = {};
+
+    // 1. Lọc theo trạng thái đơn hàng (Sử dụng Index)
+    if (status) {
+      filter.status = status;
+    }
+
+    // 2. Lọc theo email khách hàng (Sử dụng Index)
+    if (email) {
+      filter.customerEmail = email;
+    }
+
+    // 3. Lọc theo khoảng thời gian tạo đơn (Sử dụng Index)
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) {
+        filter.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        filter.createdAt.$lte = new Date(endDate);
+      }
+    }
+
+    const skipIndex = (Number(page) - 1) * Number(limit);
+
+    // Truy vấn kết hợp sắp xếp tận dụng tối đa Compound Index
+    const orders = await Order.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skipIndex)
+      .limit(Number(limit));
+
+    // Đếm tổng số bản ghi phù hợp để tính phân trang
+    const total = await Order.countDocuments(filter);
+
+    res.json({
+      orders: orders.map(o => {
+        const totalAmount = (o.products || []).reduce((sum, p) => sum + ((p.price || 0) * (p.quantity || 0)), 0);
+        return {
+          ...o.toObject(),
+          totalAmount
+        };
+      }),
+      pagination: {
+        total,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(total / limit)
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

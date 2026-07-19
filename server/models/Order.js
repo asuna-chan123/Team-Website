@@ -65,4 +65,10 @@ const orderSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+// Đánh chỉ mục (Index) tăng tốc truy vấn tìm kiếm đơn hàng theo email khách hàng
+orderSchema.index({ customerEmail: 1 });
+
+// Đánh chỉ mục hỗn hợp (Compound Index) phục vụ việc lọc và sắp xếp đơn hàng theo trạng thái, khách hàng và thời gian tạo
+orderSchema.index({ status: 1, customerEmail: 1, createdAt: -1 });
+
 module.exports = mongoose.model('Order', orderSchema);

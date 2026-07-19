@@ -53,4 +53,7 @@ const productSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+// Đánh chỉ mục để lọc nhanh các sản phẩm chưa xóa
+productSchema.index({ isDeleted: 1 });
+
 module.exports = mongoose.model('Product', productSchema);
