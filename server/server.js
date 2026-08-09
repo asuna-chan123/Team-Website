@@ -9,6 +9,20 @@ const Product = require('./models/Product');
 const Order = require('./models/Order');
 const Admin = require('./models/Admin');
 const Cart = require('./models/Cart');
+const {
+  setSession,
+  getSession,
+  deleteSession,
+  setCartItem,
+  getCart,
+  cacheProduct,
+  getProductCache,
+  invalidateProductCache,
+  cacheCategoryProducts,
+  getCategoryProductsCache,
+  acquireStockLock,
+  releaseStockLock
+} = require('./redisClient');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -58,7 +72,15 @@ app.post('/api/auth/login', async (req, res) => {
       { expiresIn: '1d' }
     );
     
-    res.json({ token, message: 'Logged in successfully' });
+    // Create Redis Session: key pattern session:{session_id} with 1800s TTL (30 mins)
+    const sessionId = 'sess_' + Math.random().toString(36).substring(2) + Date.now();
+    await setSession(sessionId, {
+      user_id: admin._id,
+      email: admin.email,
+      role: 'admin'
+    }, 1800);
+    
+    res.json({ token, sessionId, message: 'Logged in successfully (Session TTL 1800s in Redis)' });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error' });
@@ -147,6 +169,41 @@ app.post('/api/products', async (req, res) => {
   }
 });
 
+// Endpoint lấy chi tiết sản phẩm có Redis Cache 300 giây (key: cache:product:{product_id})
+app.get('/api/products/:id', async (req, res) => {
+  try {
+    const productId = req.params.id;
+    // Step 1: Check Redis Cache
+    const cachedProduct = await getProductCache(productId);
+    if (cachedProduct) {
+      return res.json({ ...cachedProduct, _source: 'Redis Cache (TTL 300s)' });
+    }
+    
+    // Step 2: Query MongoDB if Cache MISS
+    const product = await Product.findById(productId);
+    if (!product || product.isDeleted === 1) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    
+    // Create compact product document
+    const compactProduct = {
+      _id: product._id,
+      products_id: product.products_id,
+      product_name: product.product_name || product.name,
+      category: product.category,
+      variants: product.variants,
+      price: product.price
+    };
+
+    // Step 3: Write to Redis with TTL 300s (5 minutes)
+    await cacheProduct(productId, compactProduct, 300);
+
+    res.json({ ...compactProduct, _source: 'MongoDB Database' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.put('/api/products/:id', async (req, res) => {
   try {
     if (req.body.name && !req.body.product_name) {
@@ -156,6 +213,10 @@ app.put('/api/products/:id', async (req, res) => {
 
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!product) return res.status(404).json({ message: 'Product not found' });
+    
+    // Invalidate Redis product cache on update
+    await invalidateProductCache(req.params.id);
+
     res.json(product);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -166,7 +227,68 @@ app.delete('/api/products/:id', async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(req.params.id, { isDeleted: 1 }, { new: true });
     if (!product) return res.status(404).json({ message: 'Product not found' });
+
+    // Invalidate Redis product cache on delete
+    await invalidateProductCache(req.params.id);
+
     res.json({ message: 'Product deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// ----------------------------------------------------
+// CATEGORY & CACHE DANH MỤC (TTL 600s - Key: cache:category:{category_id})
+// ----------------------------------------------------
+app.get('/api/categories/:categoryId/products', async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    
+    // Step 1: Check Redis Set cache for product_ids in category
+    const cachedProductIds = await getCategoryProductsCache(categoryId);
+    if (cachedProductIds) {
+      return res.json({ categoryId, product_ids: cachedProductIds, _source: 'Redis Set Cache (TTL 600s)' });
+    }
+
+    // Step 2: Query MongoDB for product_ids in this category
+    const products = await Product.find({ category: categoryId, isDeleted: { $ne: 1 } }, '_id products_id');
+    const productIds = products.map(p => p.products_id || p._id.toString());
+
+    // Step 3: Cache Set in Redis with TTL 600s (10 minutes)
+    await cacheCategoryProducts(categoryId, productIds, 600);
+
+    res.json({ categoryId, product_ids: productIds, _source: 'MongoDB Database' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// ----------------------------------------------------
+// KHÓA NGẮN HẠN 10s (TTL 10s - Key: lock:stock:{variant_id})
+// ----------------------------------------------------
+app.post('/api/checkout/lock-stock', async (req, res) => {
+  try {
+    const { variantId } = req.body;
+    if (!variantId) {
+      return res.status(400).json({ message: 'variantId is required' });
+    }
+
+    const lockToken = 'lock_token_' + Math.random().toString(36).substring(2) + Date.now();
+    // Acquire Distributed Lock with 10 seconds TTL
+    const acquired = await acquireStockLock(variantId, lockToken, 10);
+
+    if (!acquired) {
+      return res.status(429).json({
+        success: false,
+        message: 'Biến thể sản phẩm này đang được xử lý thanh toán bởi người khác. Vui lòng thử lại sau 10 giây!'
+      });
+    }
+
+    res.json({
+      success: true,
+      lockToken,
+      message: `Đã khóa tồn kho cho biến thể ${variantId} trong 10 giây (Key: lock:stock:${variantId})`
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
