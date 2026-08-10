@@ -390,14 +390,14 @@ app.get('/api/customers', async (req, res) => {
         $project: {
           _id: 1,
           user_id: 1,
-          name: '$user_name',
-          email: 1,
-          phone: 1,
-          address: 1,
+          name: { $ifNull: ['$user_name', { $ifNull: ['$name', '$email'] }] },
+          email: { $ifNull: ['$email', ''] },
+          phone: { $ifNull: ['$phone', ''] },
+          address: { $ifNull: ['$address', ''] },
           group: { $literal: 'Mới' },
           status: { $literal: 'Active' },
           // $size dùng để đếm số lượng phần tử của mảng đơn hàng (số đơn)
-          totalOrders: { $size: '$orders' },
+          totalOrders: { $size: { $ifNull: ['$orders', []] } },
           // Tính tổng chi tiêu của các đơn hàng không bị hủy
           totalSpent: {
             $sum: {

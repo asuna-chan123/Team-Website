@@ -25,9 +25,15 @@ export default function Customers() {
     try {
       const res = await fetch("http://localhost:5000/api/customers");
       const data = await res.json();
-      setCustomers(data);
+      if (Array.isArray(data)) {
+        setCustomers(data);
+      } else {
+        console.error("Customers response is not an array:", data);
+        setCustomers([]);
+      }
     } catch (err) {
       console.error(err);
+      setCustomers([]);
     }
   };
 
@@ -73,10 +79,11 @@ export default function Customers() {
   };
 
   const handleToggleLock = async (cust) => {
+    const custName = cust.name || cust.user_name || cust.email || "khách hàng này";
     const newStatus = cust.status === "Active" ? "Locked" : "Active";
     const confirmMsg = cust.status === "Active"
-      ? `Bạn có chắc muốn khóa tài khoản của khách hàng "${cust.name}"?`
-      : `Bạn có chắc muốn mở khóa tài khoản cho khách hàng "${cust.name}"?`;
+      ? `Bạn có chắc muốn khóa tài khoản của khách hàng "${custName}"?`
+      : `Bạn có chắc muốn mở khóa tài khoản cho khách hàng "${custName}"?`;
 
     if (!window.confirm(confirmMsg)) return;
 
@@ -107,12 +114,18 @@ export default function Customers() {
   const handleOpenHistory = async (cust) => {
     setSelectedCustomer(cust);
     try {
-      const res = await fetch(`http://localhost:5000/api/customers/${cust.email}/orders`);
+      const res = await fetch(`http://localhost:5000/api/customers/${encodeURIComponent(cust.email || "")}/orders`);
       const data = await res.json();
-      setHistoryOrders(data);
+      if (Array.isArray(data)) {
+        setHistoryOrders(data);
+      } else {
+        setHistoryOrders([]);
+      }
       setShowHistoryModal(true);
     } catch (err) {
       console.error(err);
+      setHistoryOrders([]);
+      setShowHistoryModal(true);
     }
   };
 
@@ -125,14 +138,20 @@ export default function Customers() {
       case "Mới":
         return <span className="rounded bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-800 dark:bg-navy-700 dark:text-gray-300">Mới</span>;
       default:
-        return <span className="rounded bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-800">{group}</span>;
+        return <span className="rounded bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-800">{group || "Mới"}</span>;
     }
   };
 
-  const filteredCustomers = customers.filter((c) => {
-    const matchesSearch = c.name.toLowerCase().includes(searchCustomer.toLowerCase()) || 
-                          c.phone.includes(searchCustomer) ||
-                          c.email.toLowerCase().includes(searchCustomer.toLowerCase());
+  const safeCustomers = Array.isArray(customers) ? customers : [];
+  const filteredCustomers = safeCustomers.filter((c) => {
+    const custName = String(c.name || c.user_name || c.email || "");
+    const custPhone = String(c.phone || "");
+    const custEmail = String(c.email || "");
+    const searchTerm = (searchCustomer || "").toLowerCase();
+
+    const matchesSearch = custName.toLowerCase().includes(searchTerm) || 
+                          custPhone.includes(searchTerm) ||
+                          custEmail.toLowerCase().includes(searchTerm);
     const matchesGroup = groupFilter === "" || c.group === groupFilter;
     return matchesSearch && matchesGroup;
   });
@@ -201,16 +220,16 @@ export default function Customers() {
                       <MdPerson className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="font-bold">{c.name}</p>
+                      <p className="font-bold">{c.name || c.user_name || c.email || "Khách hàng"}</p>
                       {c.status === "Locked" && <span className="text-[10px] bg-red-100 text-red-700 px-1 py-0.5 rounded font-bold">Đã Khóa</span>}
                     </div>
                   </td>
                   <td className="py-4 px-4">
-                    <p className="font-semibold">{c.email}</p>
-                    <p className="text-xs text-gray-400">SĐT: {c.phone}</p>
+                    <p className="font-semibold">{c.email || "N/A"}</p>
+                    <p className="text-xs text-gray-400">SĐT: {c.phone || "Chưa cập nhật"}</p>
                   </td>
-                  <td className="py-4 px-4 text-gray-500 dark:text-gray-400 truncate max-w-[200px]" title={c.address}>
-                    {c.address}
+                  <td className="py-4 px-4 text-gray-500 dark:text-gray-400 truncate max-w-[200px]" title={c.address || "Chưa cập nhật"}>
+                    {c.address || "Chưa cập nhật"}
                   </td>
                   <td className="py-4 px-4">{getGroupBadge(c.group)}</td>
                   <td className="py-4 px-4 font-bold text-center sm:text-left">
@@ -389,16 +408,16 @@ export default function Customers() {
 
             <h3 className="mb-3 text-lg font-bold flex items-center gap-2">
               <MdHistory className="text-brand-500 h-5 w-5" />
-              Lịch sử đơn hàng ({historyOrders.length} đơn)
+              Lịch sử đơn hàng ({(historyOrders || []).length} đơn)
             </h3>
 
             <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
-              {historyOrders.map((o) => (
+              {(historyOrders || []).map((o) => (
                 <div key={o._id} className="rounded-xl border border-gray-100 p-4 dark:border-white/10 bg-white dark:bg-navy-800/50">
                   <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center mb-2">
                     <div>
-                      <span className="font-bold text-brand-500">{o.orderNumber}</span>
-                      <span className="text-xs text-gray-400 ml-2">({new Date(o.createdAt).toLocaleDateString('vi-VN')})</span>
+                      <span className="font-bold text-brand-500">{o.orderNumber || "Đơn hàng"}</span>
+                      <span className="text-xs text-gray-400 ml-2">({o.createdAt ? new Date(o.createdAt).toLocaleDateString('vi-VN') : 'N/A'})</span>
                     </div>
                     <div>
                       <span className="mr-2 text-xs text-gray-400">Trạng thái:</span>
@@ -411,22 +430,22 @@ export default function Customers() {
                   </div>
 
                   <div className="divide-y divide-gray-50 dark:divide-white/5 border-t border-b border-gray-50 dark:border-white/5 py-2 my-2 text-xs">
-                    {o.products.map((p, idx) => (
+                    {(o.products || []).map((p, idx) => (
                       <div key={idx} className="flex justify-between py-1">
-                        <span>{p.productName} (x{p.quantity})</span>
-                        <span className="font-semibold">{p.price.toLocaleString('vi-VN')}đ</span>
+                        <span>{p.productName || "Sản phẩm"} (x{p.quantity || 1})</span>
+                        <span className="font-semibold">{(p.price || 0).toLocaleString('vi-VN')}đ</span>
                       </div>
                     ))}
                   </div>
 
                   <div className="flex justify-between text-sm font-bold">
                     <span>Tổng số tiền:</span>
-                    <span className="text-navy-700 dark:text-white">{o.totalAmount.toLocaleString('vi-VN')}đ</span>
+                    <span className="text-navy-700 dark:text-white">{(o.totalAmount || 0).toLocaleString('vi-VN')}đ</span>
                   </div>
                 </div>
               ))}
 
-              {historyOrders.length === 0 && (
+              {(!historyOrders || historyOrders.length === 0) && (
                 <div className="py-8 text-center text-gray-500 italic border border-dashed rounded-xl dark:border-white/10">
                   Khách hàng chưa có giao dịch nào.
                 </div>
