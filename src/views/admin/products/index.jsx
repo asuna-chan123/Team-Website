@@ -87,8 +87,15 @@ export default function Products() {
     setShowModal(true);
   };
 
-  const handleOpenDetail = (prod) => {
-    setSelectedProduct(prod);
+  const handleOpenDetail = async (prod) => {
+    try {
+      // Call Backend API GET /api/products/:id (triggers Redis cache:product:{product_id} with 300s TTL)
+      const res = await fetch(`http://localhost:5000/api/products/${prod._id}`);
+      const data = await res.json();
+      setSelectedProduct(data);
+    } catch (err) {
+      setSelectedProduct(prod);
+    }
     setShowDetailModal(true);
   };
 
@@ -269,7 +276,15 @@ export default function Products() {
         <div className="w-full md:w-64">
           <select
             value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setFilterCategory(val);
+              if (val) {
+                const foundCat = categories.find(c => c.name === val || c.category_id === val);
+                const catId = foundCat ? (foundCat.category_id || foundCat._id) : val;
+                fetch(`http://localhost:5000/api/categories/${catId}/products`).catch(() => {});
+              }
+            }}
             className="w-full rounded-xl border border-gray-200 bg-white p-3 text-sm outline-none dark:border-white/10 dark:bg-navy-800 dark:text-white"
           >
             <option value="">Tất cả danh mục</option>

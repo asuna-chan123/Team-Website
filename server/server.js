@@ -93,6 +93,44 @@ app.post('/api/auth/login', async (req, res) => {
 app.get('/api/products', async (req, res) => {
   try {
     const products = await Product.find({ isDeleted: { $ne: 1 } }).sort({ createdAt: -1 });
+
+    // Tự động đẩy Cache vào Redis Cloud cho tất cả 18+ sản phẩm & danh mục khi tải danh sách
+    const categoryGroupMap = {};
+    const cachePromises = [];
+
+    for (const prod of products) {
+      const prodId = prod._id.toString();
+      const compactProduct = {
+        _id: prod._id,
+        products_id: prod.products_id,
+        product_name: prod.product_name || prod.name,
+        category: prod.category,
+        variants: prod.variants,
+        price: prod.price
+      };
+      // Cache chi tiết sản phẩm 300 giây (key: cache:product:{product_id})
+      cachePromises.push(cacheProduct(prodId, compactProduct, 300));
+      if (prod.products_id && prod.products_id !== prodId) {
+        cachePromises.push(cacheProduct(prod.products_id, compactProduct, 300));
+      }
+
+      // Group product IDs by category
+      if (prod.category) {
+        if (!categoryGroupMap[prod.category]) {
+          categoryGroupMap[prod.category] = [];
+        }
+        categoryGroupMap[prod.category].push(prod.products_id || prodId);
+      }
+    }
+
+    // Cache danh sách product_id theo danh mục 600 giây (key: cache:category:{category_id})
+    for (const [catId, pIds] of Object.entries(categoryGroupMap)) {
+      cachePromises.push(cacheCategoryProducts(catId, pIds, 600));
+    }
+
+    // Wait for all Redis writes to complete
+    await Promise.all(cachePromises).catch((e) => console.warn('Cache write warning:', e.message));
+
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
